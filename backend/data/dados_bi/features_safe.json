@@ -1,0 +1,142 @@
+{
+  "features_safe": {
+    "vitima": [
+      "vitima_escolaridade",
+      "vitima_gestante_em_algum_episodio",
+      "vitima_idade_max",
+      "vitima_idade_media",
+      "vitima_idade_min",
+      "vitima_ident_gen_minoria",
+      "vitima_orient_sex_minoria",
+      "vitima_reincidente_declarada",
+      "vitima_sit_conjugal",
+      "vitima_tem_lesao_autoprov"
+    ],
+    "agressor": [
+      "agressor_alcool_em_algum_episodio",
+      "agressor_meio_ameaca",
+      "agressor_meio_enfor",
+      "agressor_meio_enven",
+      "agressor_meio_fogo",
+      "agressor_meio_forca",
+      "agressor_meio_objeto",
+      "agressor_meio_quente",
+      "agressor_multiplos_envolvidos",
+      "agressor_n_meios_diferentes",
+      "agressor_n_tipos_vinculo",
+      "agressor_sexo_moda",
+      "agressor_vinculo_conhecido",
+      "agressor_vinculo_cuidador_autoridade",
+      "agressor_vinculo_desconhecido",
+      "agressor_vinculo_ex_parceiro",
+      "agressor_vinculo_familiar_afim",
+      "agressor_vinculo_familiar_consang",
+      "agressor_vinculo_outros",
+      "agressor_vinculo_parceiro_atual"
+    ],
+    "territorial": [
+      "terr_ano",
+      "terr_idade_media",
+      "terr_idh_m",
+      "terr_mes",
+      "terr_n_autor_alcool",
+      "terr_n_conjuge",
+      "terr_n_ex_conjuge",
+      "terr_n_ex_namorado",
+      "terr_n_namorado",
+      "terr_n_notificacoes_sinan",
+      "terr_n_obitos_sim",
+      "terr_n_reincidencia",
+      "terr_n_viol_fisica",
+      "terr_n_viol_psico",
+      "terr_n_viol_sexual",
+      "terr_n_violencia_parceiro_intimo",
+      "terr_populacao_total",
+      "terr_taxa_desfecho_grave"
+    ],
+    "datasenado": [
+      "ds_pct_busca_deam",
+      "ds_pct_busca_familia",
+      "ds_pct_busca_igreja",
+      "ds_pct_coabita_agressor",
+      "ds_pct_criancas_presentes",
+      "ds_pct_ex_parceiro_agressor",
+      "ds_pct_impacto_rotina",
+      "ds_pct_ja_sofreu_violencia_2025",
+      "ds_pct_nao_consegue_sustentar",
+      "ds_pct_nao_denuncia_dep_financeira",
+      "ds_pct_nao_denuncia_filhos",
+      "ds_pct_nao_denuncia_medo",
+      "ds_pct_nao_fez_nada",
+      "ds_pct_parceiro_atual_agressor",
+      "ds_pct_renda_ate_2sm",
+      "ds_pct_solicitou_medida_protetiva",
+      "ds_pct_testemunha_presente",
+      "ds_pct_violencia_12m_2025",
+      "ds_pct_violencia_fisica_agressao",
+      "ds_pct_violencia_mais_1_ano",
+      "ds_pct_violencia_psicologica_insulto",
+      "ds_pct_violencia_sexual",
+      "ds_regiao_pct_as_vezes",
+      "ds_regiao_pct_nao_respeitada",
+      "ds_regiao_pct_respeitada"
+    ],
+    "historico": [
+      "hist_intervalo_medio_dias",
+      "hist_n_notificacoes",
+      "hist_n_tipos_violencia",
+      "hist_periodo_total_dias",
+      "hist_tem_escalada_walker",
+      "hist_teve_viol_finan",
+      "hist_teve_viol_fisic",
+      "hist_teve_viol_infan",
+      "hist_teve_viol_legal",
+      "hist_teve_viol_negli",
+      "hist_teve_viol_outr",
+      "hist_teve_viol_psico",
+      "hist_teve_viol_sexu",
+      "hist_teve_viol_tort",
+      "hist_teve_viol_traf"
+    ]
+  },
+  "features_proibidas": {
+    "componentes_chave": [
+      "chave_ano",
+      "chave_cod_ibge",
+      "chave_faixa_etaria",
+      "chave_raca_cor"
+    ],
+    "leakage_target": [
+      "hist_match_sim"
+    ],
+    "identificadores": [
+      "chave_linkage",
+      "terr_cod_ibge_principal",
+      "terr_ano_referencia",
+      "terr_nome"
+    ],
+    "target": [
+      "nivel_risco"
+    ]
+  },
+  "apenas_estratificacao": {
+    "auditoria_fairness": [
+      "chave_raca_cor",
+      "chave_faixa_etaria"
+    ],
+    "split_temporal": [
+      "chave_ano"
+    ],
+    "estratificacao_geo": []
+  },
+  "meta": {
+    "total_features_safe": 88,
+    "grupos_semanticos": [
+      "vitima",
+      "agressor",
+      "territorial",
+      "datasenado",
+      "historico"
+    ]
+  }
+}

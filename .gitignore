@@ -1,0 +1,14 @@
+﻿.venv/
+.venv-py313/
+venv/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+.env
+.env.local
+backend/data/indice/
+.vscode/
+
+backend/data/dados_bi/MARIA_individual.csv
+backend/data/dados_bi/MARIA_individual_legivel.csv

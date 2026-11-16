@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  /* ---- Paleta MARIA ----
+     Ameixa profunda como cor de marca (acolhedora, não clínica),
+     rosa-terroso como acento de calor humano, salva pra dados/dashboard
+     (neutro, confiável), terracota-queimado reservado só pro banner de
+     emergência (sério, sem ser um vermelho-alarme genérico). */
+  --color-plum-950: #241220;
+  --color-plum-900: #3B1935;
+  --color-plum-800: #4A1942;
+  --color-plum-700: #62265A;
+  --color-plum-500: #8B4380;
+  --color-plum-200: #E8D5E3;
+  --color-plum-100: #F3E9F0;
+
+  --color-rose-600: #B4526B;
+  --color-rose-500: #C65D7B;
+  --color-rose-100: #FAE6EB;
+
+  --color-sage-600: #5F7A68;
+  --color-sage-500: #7C9885;
+  --color-sage-100: #E7EEE9;
+
+  --color-clay-700: #93313D;
+  --color-clay-600: #B23A48;
+  --color-clay-100: #F7E1E3;
+
+  --color-paper: #FBFAF9;
+  --color-surface: #FFFFFF;
+  --color-ink: #2A1F27;
+  --color-ink-muted: #6E5F68;
+  --color-line: #E7DFE4;
+
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-body: "Karla", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+button:not(:disabled),
+a[href],
+[role='button'],
+input[type='button']:not(:disabled),
+input[type='submit']:not(:disabled),
+input[type='reset']:not(:disabled),
+summary {
+  cursor: pointer;
+}
+
+.loading-dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 9999px;
+  background-color: var(--color-plum-500);
+  animation: loading-dot 1.2s ease-in-out infinite;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.loading-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes loading-dot {
+  0%, 60%, 100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+
+  30% {
+    opacity: 1;
+    transform: translateY(-0.2rem);
+  }
+}
+
+/* foco de teclado visível — acessibilidade não é opcional aqui */
+:focus-visible {
+  outline: 2px solid var(--color-plum-700);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .loading-dot {
+    display: none;
+  }
+}
