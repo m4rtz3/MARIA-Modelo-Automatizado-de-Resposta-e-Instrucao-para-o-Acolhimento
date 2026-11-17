@@ -71,9 +71,10 @@ API.
 - `data/knowledge_base.md`: texto de referência usado pelo RAG. Substitua ou
   atualize com a base de conhecimento aprovada pelo projeto.
 - `data/dados_bi/`: CSVs do pipeline consultados pelo endpoint de estatísticas
-  e pelo function calling de dados. Os datasets maiores são lidos em blocos
-  sob demanda; respostas de microdados são agregadas, não retornam linhas
-  individuais.
+  e pelo function calling de dados. No startup, o backend registra os arquivos
+  sem carregar seus registros; as consultas agregadas leem os CSVs em blocos
+  de até 10.000 linhas. Respostas de microdados são agregadas e não retornam
+  linhas individuais.
 - `data/indice/`: cache do índice vetorial local, usado somente quando
   `DATABASE_URL` está vazia.
 - `data/chunks_meta_instrucao.json`: arquivo auxiliar de meta-instruções

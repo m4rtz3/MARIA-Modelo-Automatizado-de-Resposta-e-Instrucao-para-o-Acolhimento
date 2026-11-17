@@ -13,6 +13,7 @@ MARIA_chatbot_rag_GEMINI_hardness_5 — duas camadas:
    de API. Roda como segunda checagem dentro de maria() (só entra se o
    function calling não achou nada) e segue exposta em GET /api/stats.
 """
+import csv
 import logging
 import re
 import unicodedata
@@ -31,6 +32,8 @@ logger = logging.getLogger("maria.data_analysis")
 _dados: Dict[str, pd.DataFrame] = {}
 _arquivos_csv: Dict[str, Path] = {}
 _csvs_sob_demanda: Dict[str, Path] = {}
+_colunas_csv: Dict[str, list[str]] = {}
+_TAMANHO_BLOCO_CSV = 10000
 
 _CAMPOS_INDIVIDUAIS = {
     "nivel_risco": {"MARIA_individual": "nivel_risco", "MARIA_individual_legivel": "Nível de risco"},
@@ -77,29 +80,23 @@ SINONIMOS = {
 
 
 def carregar_datasets() -> None:
-    """Chamado uma vez no startup. Carrega o que existir em DADOS_BI_PATH —
-    datasets grandes são registrados para leitura em blocos sob demanda."""
+    """Registra os CSVs no startup sem carregá-los inteiros na memória."""
     _dados.clear()
     _arquivos_csv.clear()
     _csvs_sob_demanda.clear()
+    _colunas_csv.clear()
     if DADOS_BI_PATH.exists():
         _arquivos_csv.update({arquivo.stem: arquivo for arquivo in DADOS_BI_PATH.glob("*.csv")})
 
-    for nome in ["MARIA_chaves", "features_vitima", "features_agressor",
-                 "features_historico", "features_territorial"]:
-        arq = DADOS_BI_PATH / f"{nome}.csv"
-        if arq.exists():
-            _dados[nome] = pd.read_csv(arq, low_memory=False)
-            logger.info("%s: %d x %d", nome, len(_dados[nome]), len(_dados[nome].columns))
-        else:
-            logger.warning("Dataset não encontrado (opcional): %s", arq)
+    for nome, arquivo in _arquivos_csv.items():
+        with arquivo.open(encoding="utf-8-sig", newline="") as stream:
+            _colunas_csv[nome] = next(csv.reader(stream), [])
+        _csvs_sob_demanda[nome] = arquivo
 
-    for nome in ["features_datasenado", "MARIA_individual", "MARIA_individual_legivel"]:
-        arq = _arquivos_csv.get(nome)
-        if arq:
-            _csvs_sob_demanda[nome] = arq
-            logger.info("%s registrado para consulta em blocos", nome)
-    logger.info("%d datasets em memória", len(_dados))
+    logger.info(
+        "%d datasets registrados para leitura sob demanda; nenhum CSV carregado na memória",
+        len(_arquivos_csv),
+    )
 
 
 def construir_enriquecimento_csvs() -> str:
@@ -189,19 +186,136 @@ def _filtrar_por_ano(df: pd.DataFrame, ano):
     return df_filtrado, f"(filtrado para {ano}: {len(df_filtrado):,} pessoas)"
 
 
-def _stats_binarias(df: pd.DataFrame, prefix: str, n: int, top: int = 15):
+def _novo_resumo_csv() -> dict:
+    return {
+        "n": 0,
+        "somas": {},
+        "contagens": {},
+        "minimos": {},
+        "maximos": {},
+        "frequencias": {},
+    }
+
+
+def _acumular_bloco(
+    resumo: dict,
+    bloco: pd.DataFrame,
+    colunas_numericas: list[str],
+    colunas_categoricas: list[str],
+    colunas_frequencia: list[str],
+) -> None:
+    resumo["n"] += len(bloco)
+    for coluna in colunas_numericas:
+        if coluna not in bloco:
+            continue
+        valores = pd.to_numeric(bloco[coluna], errors="coerce").dropna()
+        if valores.empty:
+            continue
+        resumo["somas"][coluna] = resumo["somas"].get(coluna, 0.0) + float(valores.sum())
+        resumo["contagens"][coluna] = resumo["contagens"].get(coluna, 0) + len(valores)
+        minimo = float(valores.min())
+        maximo = float(valores.max())
+        resumo["minimos"][coluna] = min(resumo["minimos"].get(coluna, minimo), minimo)
+        resumo["maximos"][coluna] = max(resumo["maximos"].get(coluna, maximo), maximo)
+        if coluna in colunas_frequencia:
+            frequencias = resumo["frequencias"].setdefault(coluna, Counter())
+            frequencias.update(valores.value_counts().to_dict())
+
+    for coluna in colunas_categoricas:
+        if coluna in bloco:
+            resumo["frequencias"].setdefault(coluna, Counter()).update(
+                bloco[coluna].dropna().astype(str).value_counts().to_dict()
+            )
+
+
+def _resumir_csv(
+    nome: str,
+    *,
+    prefixos_numericos: tuple[str, ...] = (),
+    colunas_numericas: tuple[str, ...] = (),
+    colunas_categoricas: tuple[str, ...] = (),
+    colunas_frequencia: tuple[str, ...] = (),
+    ano: Optional[int] = None,
+) -> tuple[Optional[dict], str]:
+    arquivo = _arquivos_csv.get(nome)
+    if not arquivo:
+        return None, ""
+
+    colunas = _colunas_csv.get(nome, [])
+    numericas = [
+        coluna for coluna in colunas
+        if coluna in colunas_numericas
+        or any(coluna.startswith(prefixo) for prefixo in prefixos_numericos)
+    ]
+    categoricas = [coluna for coluna in colunas if coluna in colunas_categoricas]
+    coluna_ano = "chave_linkage" if ano is not None and "chave_linkage" in colunas else None
+    colunas_lidas = list(dict.fromkeys([*numericas, *categoricas, *([coluna_ano] if coluna_ano else [])]))
+    if not colunas_lidas and colunas:
+        colunas_lidas = [colunas[0]]
+
+    total = _novo_resumo_csv()
+    filtrado = _novo_resumo_csv()
+    with pd.read_csv(
+        arquivo,
+        usecols=colunas_lidas,
+        chunksize=_TAMANHO_BLOCO_CSV,
+    ) as blocos:
+        for bloco in blocos:
+            _acumular_bloco(total, bloco, numericas, categoricas, list(colunas_frequencia))
+            if coluna_ano is None:
+                continue
+            mascara = bloco[coluna_ano].astype("string").str.contains(
+                f"_{ano}_", na=False
+            )
+            selecionado = bloco[mascara]
+            if not selecionado.empty:
+                _acumular_bloco(
+                    filtrado,
+                    selecionado,
+                    numericas,
+                    categoricas,
+                    list(colunas_frequencia),
+                )
+
+    if coluna_ano is None:
+        return total, ""
+    if filtrado["n"]:
+        return filtrado, f"(filtrado para {ano}: {filtrado['n']:,} pessoas)"
+    return total, f"(sem dados para {ano}, mostrando total)"
+
+
+def _stats_binarias_resumo(
+    resumo: dict, prefix: str, n: int, colunas: list[str], top: int = 15
+):
     linhas = []
-    for col in sorted(df.columns):
+    for col in sorted(colunas):
         if col.startswith(prefix) and col != "chave_linkage":
-            if df[col].dtype in ["float64", "int64", "bool", "int32", "float32"]:
-                if df[col].max() <= 1 and df[col].min() >= 0:
-                    s = df[col].sum()
-                    pct = s / n * 100 if n > 0 else 0
-                    if pct > 0.5:
-                        nome = col.replace(prefix, "").replace("_", " ").strip().capitalize()
-                        linhas.append((pct, f"  {nome}: {s:,.0f} ({pct:.1f}%)"))
+            if col not in resumo["minimos"]:
+                continue
+            if resumo["maximos"][col] <= 1 and resumo["minimos"][col] >= 0:
+                soma = resumo["somas"][col]
+                pct = soma / n * 100 if n > 0 else 0
+                if pct > 0.5:
+                    nome = col.replace(prefix, "").replace("_", " ").strip().capitalize()
+                    linhas.append((pct, f"  {nome}: {soma:,.0f} ({pct:.1f}%)"))
     linhas.sort(reverse=True)
     return [l[1] for l in linhas[:top]]
+
+
+def _mediana_frequencias(frequencias: Counter) -> float:
+    total = sum(frequencias.values())
+    if not total:
+        return 0.0
+    posicoes = {(total - 1) // 2, total // 2}
+    valores = []
+    acumulado = 0
+    for valor, quantidade in sorted(frequencias.items()):
+        proximo = acumulado + quantidade
+        valores.extend(valor for posicao in posicoes if acumulado <= posicao < proximo)
+        acumulado = proximo
+        if len(valores) == len(posicoes):
+            break
+    return float(sum(valores) / len(valores))
 
 
 # ---------------------------------------------------------------------
@@ -209,58 +323,77 @@ def _stats_binarias(df: pd.DataFrame, prefix: str, n: int, top: int = 15):
 # quanto como ferramentas de function calling (ver _TOOLS_DADOS abaixo).
 # ---------------------------------------------------------------------
 def _consulta_dataset_geral(ano: Optional[int] = None):
-    if "MARIA_chaves" not in _dados:
+    resumo, nota = _resumir_csv(
+        "MARIA_chaves",
+        colunas_categoricas=("nivel_risco",),
+        ano=ano,
+    )
+    if resumo is None:
         return []
-    ch = _dados["MARIA_chaves"]
-    ch_f, nota = _filtrar_por_ano(ch, ano)
-    n = len(ch_f)
-    linhas = [f"DATASET {nota}: {n:,} pessoas, {len(ch.columns)} variáveis"]
-    if "nivel_risco" in ch_f.columns:
+    n = resumo["n"]
+    colunas = _colunas_csv.get("MARIA_chaves", [])
+    linhas = [f"DATASET {nota}: {n:,} pessoas, {len(colunas)} variáveis"]
+    if "nivel_risco" in colunas:
+        contagens = resumo["frequencias"].get("nivel_risco", Counter())
         for nv in ["basal", "moderado", "alto"]:
-            cnt = (ch_f["nivel_risco"] == nv).sum()
+            cnt = contagens.get(nv, 0)
             linhas.append(f"  {nv}: {cnt:,} ({cnt/n*100:.1f}%)" if n > 0 else f"  {nv}: 0")
     return linhas
 
 
 def _consulta_vitima(ano: Optional[int] = None):
-    if "features_vitima" not in _dados:
+    resumo, nota = _resumir_csv(
+        "features_vitima",
+        prefixos_numericos=("vitima_",),
+        ano=ano,
+    )
+    if resumo is None:
         return []
-    vit = _dados["features_vitima"]
-    vit_f, nota = _filtrar_por_ano(vit, ano)
-    n = len(vit_f)
+    colunas = _colunas_csv.get("features_vitima", [])
+    n = resumo["n"]
     linhas = [f"\nPERFIL DA VÍTIMA {nota} ({n:,} pessoas):"]
-    for col in vit_f.columns:
+    for col in colunas:
         cl = col.lower()
         if "gestante" in cl:
-            s = vit_f[col].sum()
+            s = resumo["somas"].get(col, 0)
             linhas.append(f"  Gestantes: {s:,.0f} de {n:,} ({s/n*100:.1f}%)" if n > 0 else "  Gestantes: sem dados")
         elif "idade_media" in cl:
-            linhas.append(f"  Idade média: {vit_f[col].mean():.1f} anos")
+            quantidade = resumo["contagens"].get(col, 0)
+            media = resumo["somas"].get(col, 0) / quantidade if quantidade else 0
+            linhas.append(f"  Idade média: {media:.1f} anos")
         elif "idade_min" in cl:
-            linhas.append(f"  Idade mínima: {vit_f[col].min():.0f} anos")
+            if col in resumo["minimos"]:
+                linhas.append(f"  Idade mínima: {resumo['minimos'][col]:.0f} anos")
         elif "idade_max" in cl:
-            linhas.append(f"  Idade máxima: {vit_f[col].max():.0f} anos")
-    linhas.extend(_stats_binarias(vit_f, "vitima_", n))
+            if col in resumo["maximos"]:
+                linhas.append(f"  Idade máxima: {resumo['maximos'][col]:.0f} anos")
+    linhas.extend(_stats_binarias_resumo(resumo, "vitima_", n, colunas))
     return linhas
 
 
 def _consulta_agressor(ano: Optional[int] = None):
-    if "features_agressor" not in _dados:
+    resumo, nota = _resumir_csv(
+        "features_agressor",
+        prefixos_numericos=("agressor_",),
+        ano=ano,
+    )
+    if resumo is None:
         return []
-    agr = _dados["features_agressor"]
-    agr_f, nota = _filtrar_por_ano(agr, ano)
-    n = len(agr_f)
+    colunas = _colunas_csv.get("features_agressor", [])
+    n = resumo["n"]
     linhas = [f"\nPERFIL DO AGRESSOR {nota} ({n:,} pessoas):"]
-    vinculo_linhas = _stats_binarias(agr_f, "agressor_vinculo_", n)
+    vinculo_linhas = _stats_binarias_resumo(
+        resumo, "agressor_vinculo_", n, colunas
+    )
     if vinculo_linhas:
         linhas.append("  Vínculo com a vítima:")
         linhas.extend([f"  {l}" for l in vinculo_linhas])
     for col, desc in [("agressor_alcool", "Álcool envolvido"),
                        ("agressor_multiplos_envolvidos", "Múltiplos agressores")]:
-        if col in agr_f.columns:
-            s = agr_f[col].sum()
+        if col in colunas:
+            s = resumo["somas"].get(col, 0)
             linhas.append(f"  {desc}: {s:,.0f} ({s/n*100:.1f}%)" if n > 0 else f"  {desc}: sem dados")
-    meios_linhas = _stats_binarias(agr_f, "agressor_meio_", n)
+    meios_linhas = _stats_binarias_resumo(resumo, "agressor_meio_", n, colunas)
     if meios_linhas:
         linhas.append("  Meios de agressão:")
         linhas.extend([f"  {l}" for l in meios_linhas])
@@ -268,42 +401,63 @@ def _consulta_agressor(ano: Optional[int] = None):
 
 
 def _consulta_historico(ano: Optional[int] = None):
-    if "features_historico" not in _dados:
+    resumo, nota = _resumir_csv(
+        "features_historico",
+        prefixos_numericos=("hist_",),
+        colunas_frequencia=(
+            "hist_n_notificacoes",
+            "hist_n_tipos_violencia",
+        ),
+        ano=ano,
+    )
+    if resumo is None:
         return []
-    hist = _dados["features_historico"]
-    hist_f, nota = _filtrar_por_ano(hist, ano)
-    n = len(hist_f)
+    colunas = _colunas_csv.get("features_historico", [])
+    n = resumo["n"]
     linhas = [f"\nHISTÓRICO {nota} ({n:,} pessoas):"]
-    if "hist_n_notificacoes" in hist_f.columns:
-        linhas.append(
-            f"  Notificações/pessoa: média {hist_f['hist_n_notificacoes'].mean():.1f}, "
-            f"mediana {hist_f['hist_n_notificacoes'].median():.0f}"
+    if "hist_n_notificacoes" in colunas:
+        quantidade = resumo["contagens"].get("hist_n_notificacoes", 0)
+        media = (
+            resumo["somas"].get("hist_n_notificacoes", 0) / quantidade
+            if quantidade else 0
         )
-    if "hist_tem_escalada_walker" in hist_f.columns:
-        s = hist_f["hist_tem_escalada_walker"].sum()
+        mediana = _mediana_frequencias(
+            resumo["frequencias"].get("hist_n_notificacoes", Counter())
+        )
+        linhas.append(
+            f"  Notificações/pessoa: média {media:.1f}, "
+            f"mediana {mediana:.0f}"
+        )
+    if "hist_tem_escalada_walker" in colunas:
+        s = resumo["somas"].get("hist_tem_escalada_walker", 0)
         linhas.append(f"  Escalada de Walker: {s:,.0f} ({s/n*100:.1f}%)" if n > 0 else "  Escalada: sem dados")
-    viol_linhas = _stats_binarias(hist_f, "hist_teve_viol_", n)
+    viol_linhas = _stats_binarias_resumo(resumo, "hist_teve_viol_", n, colunas)
     if viol_linhas:
         linhas.append("  Tipos de violência:")
         linhas.extend([f"  {l}" for l in viol_linhas])
-    if "hist_n_tipos_violencia" in hist_f.columns and n > 0:
-        poli = (hist_f["hist_n_tipos_violencia"] >= 2).sum()
+    if "hist_n_tipos_violencia" in colunas and n > 0:
+        poli = resumo["frequencias"].get("hist_n_tipos_violencia", Counter())
+        poli = sum(qtd for valor, qtd in poli.items() if float(valor) >= 2)
         linhas.append(f"  Polimorfia (2+ tipos): {poli:,} ({poli/n*100:.1f}%)")
     return linhas
 
 
 def _consulta_territorial(ano: Optional[int] = None):
-    if "features_territorial" not in _dados:
+    resumo, nota = _resumir_csv(
+        "features_territorial",
+        colunas_categoricas=("terr_regiao", "terr_uf"),
+        ano=ano,
+    )
+    if resumo is None:
         return []
-    terr = _dados["features_territorial"]
-    terr_f, nota = _filtrar_por_ano(terr, ano)
-    n = len(terr_f)
+    n = resumo["n"]
     linhas = [f"\nTERRITORIAL {nota} ({n:,} pessoas):"]
-    if "terr_regiao" in terr_f.columns:
-        for reg, cnt in terr_f["terr_regiao"].value_counts().items():
+    if "terr_regiao" in _colunas_csv.get("features_territorial", []):
+        for reg, cnt in resumo["frequencias"].get("terr_regiao", Counter()).items():
             linhas.append(f"  {reg}: {cnt:,} ({cnt/n*100:.1f}%)")
-    if "terr_uf" in terr_f.columns:
-        for uf, cnt in terr_f["terr_uf"].value_counts().head(5).items():
+    if "terr_uf" in _colunas_csv.get("features_territorial", []):
+        contagens_uf = resumo["frequencias"].get("terr_uf", Counter())
+        for uf, cnt in contagens_uf.most_common(5):
             linhas.append(f"  {uf}: {cnt:,}")
     return linhas
 
@@ -319,8 +473,7 @@ def _consulta_datasenado():
     for bloco in pd.read_csv(
         arquivo,
         usecols=lambda coluna: isinstance(coluna, str) and coluna.startswith("ds_"),
-        chunksize=50000,
-        low_memory=False,
+        chunksize=_TAMANHO_BLOCO_CSV,
     ):
         n_linhas += len(bloco)
         for coluna in bloco.columns:
@@ -350,8 +503,7 @@ def _consulta_dados_individuais(
     for bloco in pd.read_csv(
         arquivo,
         usecols=[coluna, coluna_ano],
-        chunksize=50000,
-        low_memory=False,
+        chunksize=_TAMANHO_BLOCO_CSV,
     ):
         if ano is not None:
             anos = pd.to_numeric(bloco[coluna_ano], errors="coerce")
