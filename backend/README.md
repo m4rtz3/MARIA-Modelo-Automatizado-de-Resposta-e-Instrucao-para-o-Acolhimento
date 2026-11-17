@@ -9,7 +9,9 @@ pertinente, consulta aos CSVs do projeto.
 
 1. No startup, o backend lê as configurações de `.env`, configura o Gemini
    quando `GOOGLE_API_KEY` já está definida, carrega os datasets usados em
-   memória e carrega o encoder de embeddings.
+   memória e carrega o mesmo encoder `paraphrase-multilingual-MiniLM-L12-v2`.
+   No Docker, o encoder é carregado pelo backend ONNX com pesos INT8; fora do
+   Docker, o padrão continua sendo PyTorch.
 2. Para uma mensagem, o pipeline prepara a pergunta, busca trechos relevantes
    da base e monta o contexto enviado ao Gemini.
 3. A busca usa pgvector no Supabase/Postgres quando `DATABASE_URL` está
@@ -128,9 +130,16 @@ Na primeira execução, aguarde o carregamento das dependências e do encoder;
 interromper o processo com `Ctrl+C` encerra a indexação.
 
 O script lê `DATABASE_URL` e os caminhos de dados do `.env`, cria embeddings
-e grava os chunks em `maria_chunks` e o hash da base em `maria_kb_meta`.
-Quando o hash não mudou, informa que a base já está indexada e não repete a
-carga. A primeira execução pode baixar o modelo de embeddings.
+usando o backend configurado e grava os chunks em `maria_chunks` e o hash da
+base/backend em `maria_kb_meta`. Quando o hash não mudou, informa que a base
+já está indexada e não repete a carga. A imagem Docker já inclui o artefato
+ONNX INT8; localmente, PyTorch pode baixar o modelo na primeira execução.
+
+O Docker baixa, durante o build, o artefato INT8 publicado junto ao mesmo
+modelo no Hugging Face e fixa sua revisão. Ele mantém 384 dimensões. Ao
+implantar essa versão com pgvector, execute `scripts/indexador.py` usando a
+mesma imagem/configuração ONNX para regenerar os vetores antes de iniciar a
+API. O hash inclui o backend e força essa atualização uma vez.
 
 Também é possível executar o script no container **do backend**, se ele tiver
 o código, dependências, arquivos de dados e a mesma `DATABASE_URL`. Atualizar
@@ -231,7 +240,9 @@ Principais variáveis:
 | `GOOGLE_API_KEY` | Chave do Gemini usada pelo backend. |
 | `MARIA_SETTINGS_PASSWORD` | Senha com pelo menos 12 caracteres para desbloquear e confirmar mudanças no painel de configurações. |
 | `MODELO_LLM` | Modelo de linguagem; padrão definido em `app/config.py`. |
-| `MODELO_EMB` | Modelo de embeddings, padrão multilingual MiniLM de 384 dimensões. |
+| `MODELO_EMB` | Mesmo modelo multilingual MiniLM de 384 dimensões; no Docker, os pesos são INT8/ONNX. |
+| `MODELO_EMB_BACKEND` | Backend do encoder; `torch` localmente e `onnx` na imagem Docker. |
+| `MODELO_EMB_REVISION` | Revisão do modelo, fixada na imagem Docker para manter a mesma quantização. |
 | `DATABASE_URL` | URI PostgreSQL; vazia seleciona o índice em arquivo. |
 | `KB_PATH` | Arquivo da base de conhecimento. |
 | `DADOS_BI_PATH` | Diretório dos CSVs do pipeline. |
@@ -293,9 +304,10 @@ sql/
 - O modelo `google.generativeai` usado atualmente emite um aviso de
   descontinuação. A migração para `google.genai` deve ser feita separadamente
   e validada com testes de regressão.
-- O encoder de embeddings consome memória e pode baixar seus pesos na primeira
-  execução. Em produção, forneça recursos adequados e mantenha os dados
-  necessários disponíveis ao backend.
+- A imagem Docker usa o artefato ONNX INT8 do mesmo encoder para reduzir a
+  memória e não baixar os pesos no startup. O limite real ainda depende da
+  memória usada pelos datasets, pelo Python e pelo ONNX Runtime; valide o
+  consumo no plano de produção.
 - Configure `FRONTEND_ORIGINS` com o domínio real do frontend em produção.
   O backend precisa estar hospedado em um ambiente Python persistente e
   acessível ao navegador; configure nele as mesmas variáveis e arquivos de

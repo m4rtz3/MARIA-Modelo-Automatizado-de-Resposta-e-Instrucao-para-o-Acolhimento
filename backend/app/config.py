@@ -25,6 +25,12 @@ MODELO_LLM = os.getenv("MODELO_LLM", "gemini-3.6-flash")
 MODELO_EMB = os.getenv(
     "MODELO_EMB", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 )
+MODELO_EMB_REVISION = os.getenv("MODELO_EMB_REVISION", "")
+MODELO_EMB_PATH = os.getenv("MODELO_EMB_PATH", "")
+MODELO_EMB_BACKEND = os.getenv("MODELO_EMB_BACKEND", "torch")
+MODELO_EMB_FILE_NAME = os.getenv(
+    "MODELO_EMB_FILE_NAME", "onnx/model_quint8_avx2.onnx"
+)
 
 # ---- Paths de dados (mesma lógica de fallback do notebook original) ----
 KB_PATH = Path(

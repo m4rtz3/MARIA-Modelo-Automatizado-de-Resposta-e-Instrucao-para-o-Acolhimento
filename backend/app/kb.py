@@ -10,7 +10,6 @@ Diferença: no notebook isso era um script solto com variáveis globais
 FastAPI fica no ar entre requisições — precisamos de um objeto de estado
 único, carregado no startup (ver app/main.py).
 """
-import hashlib
 import json
 import logging
 from collections import Counter
@@ -20,7 +19,7 @@ from typing import List, Optional
 import numpy as np
 
 from app.config import INDEX_DIR, KB_PATH
-from app.llm import embed
+from app.llm import embed, hash_indice_embeddings
 
 logger = logging.getLogger("maria.kb")
 
@@ -155,7 +154,7 @@ class KnowledgeBase:
         for tipo, n in Counter(c["tipo"] for c in chunks).items():
             logger.info("  %s: %d", tipo, n)
 
-        kb_hash = hashlib.md5(kb_texto.encode("utf-8")).hexdigest()[:12]
+        kb_hash = hash_indice_embeddings(kb_texto)
         meta_path = INDEX_DIR / f"chunks_{kb_hash}.json"
         emb_path = INDEX_DIR / f"embeddings_{kb_hash}.npy"
 
