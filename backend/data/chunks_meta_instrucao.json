@@ -1,7 +1,7 @@
 [
  {
-  "chunk_id": "b4_s0_c0",
-  "bloco": "BLOCO 5 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
+  "chunk_id": "b5_s0_c0",
+  "bloco": "BLOCO 6 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
   "secao": "Escopo e limites do MARIA",
   "titulo": "Escopo e limites do MARIA",
   "tipo": "meta_instrucao",
@@ -9,8 +9,8 @@
   "n_chars": 416
  },
  {
-  "chunk_id": "b4_s0_c1",
-  "bloco": "BLOCO 5 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
+  "chunk_id": "b5_s0_c1",
+  "bloco": "BLOCO 6 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
   "secao": "Escopo e limites do MARIA",
   "titulo": "Escopo e limites do MARIA",
   "tipo": "meta_instrucao",
@@ -18,8 +18,8 @@
   "n_chars": 350
  },
  {
-  "chunk_id": "b4_s1_c0",
-  "bloco": "BLOCO 5 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
+  "chunk_id": "b5_s1_c0",
+  "bloco": "BLOCO 6 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
   "secao": "Segurança em situações de emergência",
   "titulo": "Segurança em situações de emergência",
   "tipo": "meta_instrucao",
@@ -27,8 +27,8 @@
   "n_chars": 527
  },
  {
-  "chunk_id": "b4_s2_c0",
-  "bloco": "BLOCO 5 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
+  "chunk_id": "b5_s2_c0",
+  "bloco": "BLOCO 6 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
   "secao": "Acolhimento e autonomia da pessoa",
   "titulo": "Acolhimento e autonomia da pessoa",
   "tipo": "meta_instrucao",
@@ -36,8 +36,8 @@
   "n_chars": 458
  },
  {
-  "chunk_id": "b4_s3_c0",
-  "bloco": "BLOCO 5 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
+  "chunk_id": "b5_s3_c0",
+  "bloco": "BLOCO 6 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
   "secao": "Uso responsável de estatísticas",
   "titulo": "Uso responsável de estatísticas",
   "tipo": "meta_instrucao",
@@ -45,8 +45,8 @@
   "n_chars": 554
  },
  {
-  "chunk_id": "b4_s4_c0",
-  "bloco": "BLOCO 5 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
+  "chunk_id": "b5_s4_c0",
+  "bloco": "BLOCO 6 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
   "secao": "Interpretação dos níveis descritivos do pipeline",
   "titulo": "Interpretação dos níveis descritivos do pipeline",
   "tipo": "meta_instrucao",
@@ -54,8 +54,8 @@
   "n_chars": 317
  },
  {
-  "chunk_id": "b4_s5_c0",
-  "bloco": "BLOCO 5 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
+  "chunk_id": "b5_s5_c0",
+  "bloco": "BLOCO 6 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
   "secao": "Interpretação do cruzamento SINAN × SIM",
   "titulo": "Interpretação do cruzamento SINAN × SIM",
   "tipo": "meta_instrucao",
@@ -63,8 +63,8 @@
   "n_chars": 338
  },
  {
-  "chunk_id": "b4_s6_c0",
-  "bloco": "BLOCO 5 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
+  "chunk_id": "b5_s6_c0",
+  "bloco": "BLOCO 6 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
   "secao": "Separação das fontes",
   "titulo": "Separação das fontes",
   "tipo": "meta_instrucao",
@@ -72,8 +72,8 @@
   "n_chars": 241
  },
  {
-  "chunk_id": "b4_s7_c0",
-  "bloco": "BLOCO 5 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
+  "chunk_id": "b5_s7_c0",
+  "bloco": "BLOCO 6 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
   "secao": "Linguagem jurídica e limites de classificação",
   "titulo": "Linguagem jurídica e limites de classificação",
   "tipo": "meta_instrucao",
@@ -81,8 +81,8 @@
   "n_chars": 553
  },
  {
-  "chunk_id": "b4_s8_c0",
-  "bloco": "BLOCO 5 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
+  "chunk_id": "b5_s8_c0",
+  "bloco": "BLOCO 6 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
   "secao": "Cuidado com estereótipos e causalidade",
   "titulo": "Cuidado com estereótipos e causalidade",
   "tipo": "meta_instrucao",
@@ -90,8 +90,8 @@
   "n_chars": 344
  },
  {
-  "chunk_id": "b4_s9_c0",
-  "bloco": "BLOCO 5 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
+  "chunk_id": "b5_s9_c0",
+  "bloco": "BLOCO 6 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT",
   "secao": "Regras para respostas sem evidência suficiente",
   "titulo": "Regras para respostas sem evidência suficiente",
   "tipo": "meta_instrucao",

@@ -4,6 +4,7 @@ Todas as variáveis sensíveis (chave do Gemini) vêm de .env — nunca hardcode
 """
 import os
 from pathlib import Path
+from typing import Literal
 
 from dotenv import dotenv_values, load_dotenv, set_key
 
@@ -25,6 +26,12 @@ MODELO_LLM = os.getenv("MODELO_LLM", "gemini-3.6-flash")
 MODELO_EMB = os.getenv(
     "MODELO_EMB", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 )
+_modelo_emb_backend = os.getenv("MODELO_EMB_BACKEND", "torch")
+if _modelo_emb_backend not in ("torch", "onnx", "openvino"):
+    raise ValueError(
+        "MODELO_EMB_BACKEND deve ser 'torch', 'onnx' ou 'openvino'."
+    )
+MODELO_EMB_BACKEND: Literal["torch", "onnx", "openvino"] = _modelo_emb_backend
 
 # ---- Paths de dados (mesma lógica de fallback do notebook original) ----
 KB_PATH = Path(

@@ -2,7 +2,7 @@
 Base de conhecimento vetorizada — port fiel da célula de chunking do notebook.
 
 Mesmo conceito de lá: chunking hierárquico (bloco > seção), separação de
-meta-instrução (BLOCO 5) do índice pesquisável, índice persistente em disco
+meta-instrução (BLOCO 6) do índice pesquisável, índice persistente em disco
 com hash do texto-fonte pra revetorizar só quando a KB muda.
 
 Diferença: no notebook isso era um script solto com variáveis globais
@@ -10,7 +10,6 @@ Diferença: no notebook isso era um script solto com variáveis globais
 FastAPI fica no ar entre requisições — precisamos de um objeto de estado
 único, carregado no startup (ver app/main.py).
 """
-import hashlib
 import json
 import logging
 from collections import Counter
@@ -20,18 +19,19 @@ from typing import List, Optional
 import numpy as np
 
 from app.config import INDEX_DIR, KB_PATH
-from app.llm import embed
+from app.llm import embed, hash_indice_embeddings
 
 logger = logging.getLogger("maria.kb")
 
 TIPO_POR_BLOCO = {
-    "BLOCO 1": "legislacao",
-    "BLOCO 2": "pipeline_dados",
-    "BLOCO 3": "datasenado",
-    "BLOCO 4": "canais_denuncia",
-    "BLOCO 5": "meta_instrucao",
-    "BLOCO 6": "orientacao_pratica",
-    "BLOCO 7": "pipeline_dados",
+    "BLOCO 1 |": "legislacao",
+    "BLOCO 2 |": "pipeline_dados",
+    "BLOCO 3 |": "datasenado",
+    "BLOCO 4 |": "canais_denuncia",
+    "BLOCO 5 |": "dashboards",
+    "BLOCO 6 |": "meta_instrucao",
+    "BLOCO 7 |": "orientacao_pratica",
+    "BLOCO 7:": "pipeline_dados",
 }
 
 MAX_CHARS_CHUNK = 700
@@ -155,7 +155,7 @@ class KnowledgeBase:
         for tipo, n in Counter(c["tipo"] for c in chunks).items():
             logger.info("  %s: %d", tipo, n)
 
-        kb_hash = hashlib.md5(kb_texto.encode("utf-8")).hexdigest()[:12]
+        kb_hash = hash_indice_embeddings(kb_texto)
         meta_path = INDEX_DIR / f"chunks_{kb_hash}.json"
         emb_path = INDEX_DIR / f"embeddings_{kb_hash}.npy"
 

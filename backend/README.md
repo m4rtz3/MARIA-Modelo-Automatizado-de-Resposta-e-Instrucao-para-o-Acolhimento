@@ -232,6 +232,7 @@ Principais variáveis:
 | `MARIA_SETTINGS_PASSWORD` | Senha com pelo menos 12 caracteres para desbloquear e confirmar mudanças no painel de configurações. |
 | `MODELO_LLM` | Modelo de linguagem; padrão definido em `app/config.py`. |
 | `MODELO_EMB` | Modelo de embeddings, padrão multilingual MiniLM de 384 dimensões. |
+| `MODELO_EMB_BACKEND` | Backend do Sentence Transformers (`torch`, `onnx` ou `openvino`); padrão `torch`. |
 | `DATABASE_URL` | URI PostgreSQL; vazia seleciona o índice em arquivo. |
 | `KB_PATH` | Arquivo da base de conhecimento. |
 | `DADOS_BI_PATH` | Diretório dos CSVs do pipeline. |

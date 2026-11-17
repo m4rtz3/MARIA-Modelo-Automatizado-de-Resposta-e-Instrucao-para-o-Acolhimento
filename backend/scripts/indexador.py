@@ -23,7 +23,6 @@ Variáveis de ambiente (mesmas do .env do backend):
     KB_PATH        caminho do .md da base de conhecimento (default do .env)
     DADOS_BI_PATH  pasta com os CSVs do pipeline (default do .env)
 """
-import hashlib
 import json
 import sys
 from collections import Counter
@@ -34,9 +33,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import psycopg
 from pgvector.psycopg import register_vector
 
-from app.config import DATABASE_URL, KB_PATH, MODELO_EMB
+from app.config import DATABASE_URL, KB_PATH, MODELO_EMB, MODELO_EMB_BACKEND
 from app.data_analysis import construir_enriquecimento_csvs
 from app.kb import chunk_hierarquico
+from app.llm import carregar_encoder, hash_indice_embeddings
 
 if not DATABASE_URL:
     sys.exit("❌ Defina DATABASE_URL no .env (ex: postgresql://user:senha@host:5432/maria)")
@@ -56,7 +56,7 @@ def carrega_kb_enriquecida() -> str:
 
 def main():
     kb_texto = carrega_kb_enriquecida()
-    kb_hash = hashlib.md5(kb_texto.encode("utf-8")).hexdigest()[:12]
+    kb_hash = hash_indice_embeddings(kb_texto)
 
     with psycopg.connect(DATABASE_URL, autocommit=False) as conn:
         register_vector(conn)
@@ -80,9 +80,8 @@ def main():
         for tipo, n in Counter(c["tipo"] for c in chunks).items():
             print(f"  {tipo}: {n}")
 
-        print(f"\nCarregando encoder ({MODELO_EMB})...")
-        from sentence_transformers import SentenceTransformer
-        encoder = SentenceTransformer(MODELO_EMB)
+        print(f"\nCarregando encoder ({MODELO_EMB}, backend={MODELO_EMB_BACKEND})...")
+        encoder = carregar_encoder()
         embeddings = encoder.encode(
             [c["texto"] for c in chunks], show_progress_bar=True, convert_to_numpy=True
         )
@@ -113,7 +112,7 @@ def main():
             )
         conn.commit()
 
-        # chunks de meta-instrução (BLOCO 5) não vão pro índice de busca.
+        # chunks de meta-instrução (BLOCO 6) não vão pro índice de busca.
         # O app também os carrega da KB e os anexa ao SYSTEM_PROMPT.
         meta_path = Path(__file__).resolve().parent.parent / "data" / "chunks_meta_instrucao.json"
         meta_path.parent.mkdir(parents=True, exist_ok=True)

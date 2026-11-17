@@ -46,6 +46,11 @@ TIPOS_KB = {
         "Onde e como denunciar — Ligue 180, 190, DEAM, como pedir medida "
         "protetiva, o que é necessário para registrar um caso."
     ),
+    "dashboards": (
+        "Dados apresentados nos oito dashboards interativos do projeto MARIA "
+        "(SINAN e SIM, 2015–2024): panorama, perfil de vítimas e agressores, "
+        "menores de idade, gestantes, qualidade dos dados e comparação entre bases."
+    ),
     "orientacao_pratica": (
         "Roteiros de ação para situações específicas — o que fazer se está com "
         "medo, se depende financeiramente do agressor, se a medida protetiva foi "
@@ -103,6 +108,10 @@ Exemplo 2 (caso difícil — pergunta ambígua que cruza múltiplas categorias):
 Exemplo 3 (caso de borda — urgência não deve se perder na decomposição):
 <pergunta>socorro, ele tá aqui na porta e eu tô com medo</pergunta>
 {{"subperguntas": [{{"tipo": "canais_denuncia", "pergunta": "Como pedir ajuda de emergência agora (190, Ligue 180) em situação de risco imediato?"}}]}}
+
+Exemplo 4 (pergunta sobre um dashboard específico):
+<pergunta>Quantas notificações contra menores aparecem no painel 5?</pergunta>
+{{"subperguntas": [{{"tipo": "dashboards", "pergunta": "Quantas notificações de violência contra menores de 18 anos são apresentadas no painel 5 dos dashboards do projeto MARIA?"}}]}}
 """
 
 

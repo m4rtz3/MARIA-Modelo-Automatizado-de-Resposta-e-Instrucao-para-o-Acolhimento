@@ -14,6 +14,7 @@ de médio prazo, mas é troca de biblioteca, não um patch — fazer como
 tarefa isolada, com os mesmos testes de regressão (harness de retrieval +
 os 4 casos de teste manuais do notebook) antes de substituir em produção.
 """
+import hashlib
 import logging
 import time
 from typing import Iterator, List, Optional
@@ -32,7 +33,14 @@ from requests.exceptions import ConnectionError as RequestsConnectionError
 from requests.exceptions import ReadTimeout
 from sentence_transformers import SentenceTransformer
 
-from app.config import GOOGLE_API_KEY, MAX_TURNOS_HISTORICO, MODELO_EMB, MODELO_LLM, TIMEOUT_REQUEST_S
+from app.config import (
+    GOOGLE_API_KEY,
+    MAX_TURNOS_HISTORICO,
+    MODELO_EMB,
+    MODELO_EMB_BACKEND,
+    MODELO_LLM,
+    TIMEOUT_REQUEST_S,
+)
 
 logger = logging.getLogger("maria.llm")
 
@@ -47,6 +55,14 @@ _encoder: Optional[SentenceTransformer] = None
 _api_key: Optional[str] = GOOGLE_API_KEY or None
 
 
+def carregar_encoder() -> SentenceTransformer:
+    return SentenceTransformer(MODELO_EMB, backend=MODELO_EMB_BACKEND)
+
+
+def hash_indice_embeddings(texto: str) -> str:
+    return hashlib.md5(texto.encode("utf-8")).hexdigest()[:12]
+
+
 def init_llm() -> None:
     """Chamado uma vez no startup do FastAPI (ver app/main.py lifespan)."""
     global _encoder
@@ -56,7 +72,7 @@ def init_llm() -> None:
     else:
         logger.warning("GOOGLE_API_KEY ausente; configure-a em Configurações.")
 
-    _encoder = SentenceTransformer(MODELO_EMB)
+    _encoder = carregar_encoder()
     logger.info("Encoder de embeddings carregado (%s)", MODELO_EMB)
 
 
