@@ -228,7 +228,12 @@ export default function App() {
               />
             </section>
           </div>
-        ) : <DashboardView filtros={filtrosDashboard} />}
+        ) : (
+          <DashboardView
+            filtros={filtrosDashboard}
+            conversas={estadoConversas.conversas}
+          />
+        )}
       </main>
     </div>
   )

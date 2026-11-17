@@ -209,9 +209,10 @@ export default function ChatView({
           <p className="pt-1 leading-relaxed">
             Suas mensagens e o histórico desta conversa são enviados ao Gemini
             para gerar respostas e ficam salvos neste navegador. O texto da
-            conversa não é enviado ao dashboard; quando configurados, apenas
-            filtros genéricos inferidos localmente podem ser enviados na URL do
-            Tableau.
+            conversa não é enviado ao dashboard nem usado pela recomendação
+            fora deste navegador. As recomendações são calculadas localmente
+            sobre as conversas salvas; quando configurados, apenas filtros
+            genéricos inferidos localmente podem ser enviados na URL do Tableau.
           </p>
         </details>
         <ChatInput onEnviar={enviar} desabilitado={carregando} />
