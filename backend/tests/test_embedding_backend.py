@@ -7,12 +7,20 @@ from app import llm
 
 class EmbeddingBackendTests(unittest.TestCase):
     def test_torch_backend_keeps_model_id_and_does_not_set_onnx_options(self):
+        sentence_transformer = Mock()
         with (
             patch.object(llm, "MODELO_EMB", "sentence-transformers/model"),
             patch.object(llm, "MODELO_EMB_REVISION", ""),
             patch.object(llm, "MODELO_EMB_PATH", ""),
             patch.object(llm, "MODELO_EMB_BACKEND", "torch"),
-            patch.object(llm, "SentenceTransformer") as sentence_transformer,
+            patch.dict(
+                "sys.modules",
+                {
+                    "sentence_transformers": SimpleNamespace(
+                        SentenceTransformer=sentence_transformer
+                    )
+                },
+            ),
         ):
             encoder = llm.carregar_encoder()
 
@@ -28,6 +36,7 @@ class EmbeddingBackendTests(unittest.TestCase):
         options = SimpleNamespace()
         session_options = Mock(return_value=options)
         onnxruntime = SimpleNamespace(SessionOptions=session_options)
+        sentence_transformer = Mock()
 
         with (
             patch.object(llm, "MODELO_EMB", "sentence-transformers/model"),
@@ -39,7 +48,14 @@ class EmbeddingBackendTests(unittest.TestCase):
             patch.object(llm, "MODELO_EMB_PATH", "/app/model"),
             patch.object(llm, "MODELO_EMB_BACKEND", "onnx"),
             patch.object(llm, "MODELO_EMB_FILE_NAME", "onnx/model_quint8_avx2.onnx"),
-            patch.object(llm, "SentenceTransformer") as sentence_transformer,
+            patch.dict(
+                "sys.modules",
+                {
+                    "sentence_transformers": SimpleNamespace(
+                        SentenceTransformer=sentence_transformer
+                    )
+                },
+            ),
             patch.dict("sys.modules", {"onnxruntime": onnxruntime}),
         ):
             encoder = llm.carregar_encoder()
@@ -70,6 +86,23 @@ class EmbeddingBackendTests(unittest.TestCase):
             onnx_hash = llm.hash_indice_embeddings("base")
 
         self.assertNotEqual(torch_hash, onnx_hash)
+
+    def test_embedding_model_loads_only_when_first_requested(self):
+        encoder = Mock()
+        with (
+            patch.object(llm, "_encoder", None),
+            patch.object(llm, "_api_key", None),
+            patch.object(llm, "carregar_encoder", return_value=encoder) as loader,
+        ):
+            llm.init_llm()
+            loader.assert_not_called()
+
+            first = llm.get_embedding_model()
+            second = llm.get_embedding_model()
+
+        self.assertIs(first, encoder)
+        self.assertIs(second, encoder)
+        loader.assert_called_once_with()
 
 
 if __name__ == "__main__":

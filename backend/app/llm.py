@@ -17,7 +17,8 @@ os 4 casos de teste manuais do notebook) antes de substituir em produção.
 import hashlib
 import logging
 import time
-from typing import Iterator, List, Optional
+from threading import Lock
+from typing import TYPE_CHECKING, Iterator, List, Optional
 
 import google.generativeai as genai
 import numpy as np
@@ -31,19 +32,18 @@ from google.api_core.exceptions import (
 from google.generativeai.types import HarmBlockThreshold, HarmCategory
 from requests.exceptions import ConnectionError as RequestsConnectionError
 from requests.exceptions import ReadTimeout
-from sentence_transformers import SentenceTransformer
+
+if TYPE_CHECKING:
+    from sentence_transformers import SentenceTransformer
 
 from app.config import (
     GOOGLE_API_KEY,
     MAX_TURNOS_HISTORICO,
     MODELO_EMB,
     MODELO_EMB_BACKEND,
-<<<<<<< HEAD
-=======
     MODELO_EMB_FILE_NAME,
     MODELO_EMB_PATH,
     MODELO_EMB_REVISION,
->>>>>>> 738913fc8e4d3adb5e4bd12ff21578a173da4407
     MODELO_LLM,
     TIMEOUT_REQUEST_S,
 )
@@ -57,18 +57,11 @@ SAFETY_SETTINGS = {
     HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
 }
 
-_encoder: Optional[SentenceTransformer] = None
+_encoder: Optional["SentenceTransformer"] = None
+_encoder_lock = Lock()
 _api_key: Optional[str] = GOOGLE_API_KEY or None
 
 
-<<<<<<< HEAD
-def carregar_encoder() -> SentenceTransformer:
-    return SentenceTransformer(MODELO_EMB, backend=MODELO_EMB_BACKEND)
-
-
-def hash_indice_embeddings(texto: str) -> str:
-    return hashlib.md5(texto.encode("utf-8")).hexdigest()[:12]
-=======
 def hash_indice_embeddings(texto: str) -> str:
     """Separa caches quando muda a revisão do modelo ou o backend de inferência."""
     revisao = (
@@ -80,8 +73,10 @@ def hash_indice_embeddings(texto: str) -> str:
     return hashlib.md5(f"{revisao}\0{texto}".encode("utf-8")).hexdigest()[:12]
 
 
-def carregar_encoder() -> SentenceTransformer:
+def carregar_encoder() -> "SentenceTransformer":
     """Carrega o modelo configurado, limitando threads e memória no backend ONNX."""
+    from sentence_transformers import SentenceTransformer
+
     model_kwargs = None
     if MODELO_EMB_BACKEND == "onnx":
         from onnxruntime import SessionOptions
@@ -103,28 +98,30 @@ def carregar_encoder() -> SentenceTransformer:
         model_kwargs=model_kwargs,
         revision=(MODELO_EMB_REVISION or None) if not MODELO_EMB_PATH else None,
     )
->>>>>>> 738913fc8e4d3adb5e4bd12ff21578a173da4407
+
+
+def get_embedding_model() -> "SentenceTransformer":
+    """Carrega o encoder sob demanda, uma única vez por processo."""
+    global _encoder
+    if _encoder is None:
+        with _encoder_lock:
+            if _encoder is None:
+                _encoder = carregar_encoder()
+                logger.info(
+                    "Encoder de embeddings carregado (%s, backend=%s)",
+                    MODELO_EMB,
+                    MODELO_EMB_BACKEND,
+                )
+    return _encoder
 
 
 def init_llm() -> None:
     """Chamado uma vez no startup do FastAPI (ver app/main.py lifespan)."""
-    global _encoder
     if _api_key:
         genai.configure(api_key=_api_key)
         logger.info("Gemini configurado (%s)", MODELO_LLM)
     else:
         logger.warning("GOOGLE_API_KEY ausente; configure-a em Configurações.")
-
-    _encoder = carregar_encoder()
-<<<<<<< HEAD
-    logger.info("Encoder de embeddings carregado (%s)", MODELO_EMB)
-=======
-    logger.info(
-        "Encoder de embeddings carregado (%s, backend=%s)",
-        MODELO_EMB,
-        MODELO_EMB_BACKEND,
-    )
->>>>>>> 738913fc8e4d3adb5e4bd12ff21578a173da4407
 
 
 def configurar_api_key(api_key: str) -> None:
@@ -302,10 +299,9 @@ def llm_stream(
 
 def embed(textos):
     """Gera embeddings localmente via SentenceTransformer."""
-    if _encoder is None:
-        raise RuntimeError("Encoder não inicializado — chame init_llm() no startup.")
+    encoder = get_embedding_model()
     is_single = isinstance(textos, str)
     if is_single:
         textos = [textos]
-    res = _encoder.encode(textos, show_progress_bar=False, convert_to_numpy=True)
+    res = encoder.encode(textos, show_progress_bar=False, convert_to_numpy=True)
     return res.squeeze() if is_single else res

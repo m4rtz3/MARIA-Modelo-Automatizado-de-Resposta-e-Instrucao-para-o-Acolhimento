@@ -153,7 +153,7 @@ async def lifespan(app: FastAPI):
     logger.info("Inicializando MARIA API...")
     t0 = time.time()
 
-    init_llm()  # configura Gemini + carrega o encoder de embeddings
+    init_llm()  # configura Gemini; o encoder é carregado sob demanda
     carregar_datasets()  # carrega os CSVs do pipeline (opcional, pra /api/stats e function calling)
 
     if DATABASE_URL:

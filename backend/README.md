@@ -241,14 +241,9 @@ Principais variáveis:
 | `GOOGLE_API_KEY` | Chave do Gemini usada pelo backend. |
 | `MARIA_SETTINGS_PASSWORD` | Senha com pelo menos 12 caracteres para desbloquear e confirmar mudanças no painel de configurações. |
 | `MODELO_LLM` | Modelo de linguagem; padrão definido em `app/config.py`. |
-<<<<<<< HEAD
-| `MODELO_EMB` | Modelo de embeddings, padrão multilingual MiniLM de 384 dimensões. |
-| `MODELO_EMB_BACKEND` | Backend do Sentence Transformers (`torch`, `onnx` ou `openvino`); padrão `torch`. |
-=======
 | `MODELO_EMB` | Mesmo modelo multilingual MiniLM de 384 dimensões; no Docker, os pesos são INT8/ONNX. |
 | `MODELO_EMB_BACKEND` | Backend do encoder; `torch` localmente e `onnx` na imagem Docker. |
 | `MODELO_EMB_REVISION` | Revisão do modelo, fixada na imagem Docker para manter a mesma quantização. |
->>>>>>> 738913fc8e4d3adb5e4bd12ff21578a173da4407
 | `DATABASE_URL` | URI PostgreSQL; vazia seleciona o índice em arquivo. |
 | `KB_PATH` | Arquivo da base de conhecimento. |
 | `DADOS_BI_PATH` | Diretório dos CSVs do pipeline. |
@@ -263,6 +258,10 @@ reinicie o processo do backend após alterá-las. Defina `MARIA_SETTINGS_PASSWOR
 em `backend/.env` e reinicie a API para habilitar o painel. Se a senha não
 estiver definida ou tiver menos de 12 caracteres, as rotas de configuração
 permanecem desabilitadas.
+
+O encoder Sentence Transformers é carregado sob demanda na primeira operação
+de embeddings. Com `DATABASE_URL` configurada, isso acontece na primeira busca
+pgvector, não durante o startup da API.
 
 O botão de configurações no frontend exige essa senha para abrir e novamente
 para confirmar. A chave nova não é devolvida pela API nem salva no navegador;
