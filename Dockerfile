@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 FROM python:3.11-slim
 
 WORKDIR /app
@@ -15,3 +16,6 @@ COPY backend/ .
 EXPOSE 8000
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+=======
+/backend/Dockerfile
+>>>>>>> 009aecd37f559980df4baa8be3d5a9cd6366edd3
