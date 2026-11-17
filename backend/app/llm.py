@@ -1,5 +1,5 @@
 """
-Camada de chamada ao Gemini + embeddings locais.
+Camada de chamadas aos modelos generativos e de embeddings do Gemini.
 
 Portado 1:1 da lógica já validada no notebook MARIA_chatbot_rag_GEMINI_hardness_2:
 - retry em 429 (cota)/503/timeout, com backoff crescente
@@ -38,6 +38,12 @@ from app.config import (
     MAX_TURNOS_HISTORICO,
     MODELO_EMB,
     MODELO_EMB_BACKEND,
+<<<<<<< HEAD
+=======
+    MODELO_EMB_FILE_NAME,
+    MODELO_EMB_PATH,
+    MODELO_EMB_REVISION,
+>>>>>>> 738913fc8e4d3adb5e4bd12ff21578a173da4407
     MODELO_LLM,
     TIMEOUT_REQUEST_S,
 )
@@ -55,12 +61,49 @@ _encoder: Optional[SentenceTransformer] = None
 _api_key: Optional[str] = GOOGLE_API_KEY or None
 
 
+<<<<<<< HEAD
 def carregar_encoder() -> SentenceTransformer:
     return SentenceTransformer(MODELO_EMB, backend=MODELO_EMB_BACKEND)
 
 
 def hash_indice_embeddings(texto: str) -> str:
     return hashlib.md5(texto.encode("utf-8")).hexdigest()[:12]
+=======
+def hash_indice_embeddings(texto: str) -> str:
+    """Separa caches quando muda a revisão do modelo ou o backend de inferência."""
+    revisao = (
+        f"{MODELO_EMB}|{MODELO_EMB_REVISION}|{MODELO_EMB_BACKEND}|"
+        f"{MODELO_EMB_FILE_NAME}"
+        if MODELO_EMB_BACKEND == "onnx"
+        else f"{MODELO_EMB}|{MODELO_EMB_REVISION}|{MODELO_EMB_BACKEND}"
+    )
+    return hashlib.md5(f"{revisao}\0{texto}".encode("utf-8")).hexdigest()[:12]
+
+
+def carregar_encoder() -> SentenceTransformer:
+    """Carrega o modelo configurado, limitando threads e memória no backend ONNX."""
+    model_kwargs = None
+    if MODELO_EMB_BACKEND == "onnx":
+        from onnxruntime import SessionOptions
+
+        session_options = SessionOptions()
+        session_options.intra_op_num_threads = 1
+        session_options.inter_op_num_threads = 1
+        session_options.enable_cpu_mem_arena = False
+        model_kwargs = {
+            "file_name": MODELO_EMB_FILE_NAME,
+            "provider": "CPUExecutionProvider",
+            "session_options": session_options,
+            "export": False,
+        }
+
+    return SentenceTransformer(
+        MODELO_EMB_PATH or MODELO_EMB,
+        backend=MODELO_EMB_BACKEND,
+        model_kwargs=model_kwargs,
+        revision=(MODELO_EMB_REVISION or None) if not MODELO_EMB_PATH else None,
+    )
+>>>>>>> 738913fc8e4d3adb5e4bd12ff21578a173da4407
 
 
 def init_llm() -> None:
@@ -73,7 +116,15 @@ def init_llm() -> None:
         logger.warning("GOOGLE_API_KEY ausente; configure-a em Configurações.")
 
     _encoder = carregar_encoder()
+<<<<<<< HEAD
     logger.info("Encoder de embeddings carregado (%s)", MODELO_EMB)
+=======
+    logger.info(
+        "Encoder de embeddings carregado (%s, backend=%s)",
+        MODELO_EMB,
+        MODELO_EMB_BACKEND,
+    )
+>>>>>>> 738913fc8e4d3adb5e4bd12ff21578a173da4407
 
 
 def configurar_api_key(api_key: str) -> None:

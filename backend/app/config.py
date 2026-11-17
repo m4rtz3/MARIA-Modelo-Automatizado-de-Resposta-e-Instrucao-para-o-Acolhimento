@@ -26,12 +26,21 @@ MODELO_LLM = os.getenv("MODELO_LLM", "gemini-3.6-flash")
 MODELO_EMB = os.getenv(
     "MODELO_EMB", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 )
+<<<<<<< HEAD
 _modelo_emb_backend = os.getenv("MODELO_EMB_BACKEND", "torch")
 if _modelo_emb_backend not in ("torch", "onnx", "openvino"):
     raise ValueError(
         "MODELO_EMB_BACKEND deve ser 'torch', 'onnx' ou 'openvino'."
     )
 MODELO_EMB_BACKEND: Literal["torch", "onnx", "openvino"] = _modelo_emb_backend
+=======
+MODELO_EMB_REVISION = os.getenv("MODELO_EMB_REVISION", "")
+MODELO_EMB_PATH = os.getenv("MODELO_EMB_PATH", "")
+MODELO_EMB_BACKEND = os.getenv("MODELO_EMB_BACKEND", "torch")
+MODELO_EMB_FILE_NAME = os.getenv(
+    "MODELO_EMB_FILE_NAME", "onnx/model_quint8_avx2.onnx"
+)
+>>>>>>> 738913fc8e4d3adb5e4bd12ff21578a173da4407
 
 # ---- Paths de dados (mesma lógica de fallback do notebook original) ----
 KB_PATH = Path(
