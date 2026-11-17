@@ -2,7 +2,7 @@
 Camada de chamadas aos modelos generativos e de embeddings do Gemini.
 
 Portado 1:1 da lógica já validada no notebook MARIA_chatbot_rag_GEMINI_hardness_2:
-- retry em 429 (cota)/503/timeout, com backoff crescente
+- retry em falhas transitórias, com backoff crescente; não repetir 404 nem 429 de quota
 - safety_settings em BLOCK_NONE (necessário pra um chatbot que discute
   violência/abuso sem ser bloqueado por engano pelo classificador do Gemini)
 - checagem de finish_reason pra logar respostas cortadas
@@ -23,13 +23,13 @@ from typing import TYPE_CHECKING, Iterator, List, Optional
 import google.generativeai as genai
 import numpy as np
 from google.api_core.exceptions import (
+    Aborted,
+    BadGateway,
     DeadlineExceeded,
-    GoogleAPICallError,
-    ResourceExhausted,
+    InternalServerError,
     ServiceUnavailable,
-    TooManyRequests,
 )
-from google.generativeai.types import HarmBlockThreshold, HarmCategory
+from google.generativeai.types import HarmBlockThreshold, HarmCategory, RequestOptions
 from requests.exceptions import ConnectionError as RequestsConnectionError
 from requests.exceptions import ReadTimeout
 
@@ -49,6 +49,10 @@ from app.config import (
 )
 
 logger = logging.getLogger("maria.llm")
+
+def _request_options() -> RequestOptions:
+    return RequestOptions(timeout=TIMEOUT_REQUEST_S, retry=None)
+
 
 SAFETY_SETTINGS = {
     HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
@@ -161,16 +165,13 @@ def _chama_com_retry(func_chamada, tentativas=3, espera_base=2):
     for tentativa in range(tentativas):
         try:
             return func_chamada()
-        except (ResourceExhausted, TooManyRequests) as e:
-            ultimo_erro = e
-            if tentativa + 1 < tentativas:
-                espera = espera_base * (tentativa + 1)
-                logger.warning(
-                    "Cota momentaneamente excedida (tentativa %d/%d), aguardando %ds...",
-                    tentativa + 1, tentativas, espera,
-                )
-                time.sleep(espera)
-        except (ServiceUnavailable, DeadlineExceeded) as e:
+        except (
+            Aborted,
+            BadGateway,
+            DeadlineExceeded,
+            InternalServerError,
+            ServiceUnavailable,
+        ) as e:
             ultimo_erro = e
             if tentativa + 1 < tentativas:
                 logger.warning(
@@ -183,14 +184,6 @@ def _chama_com_retry(func_chamada, tentativas=3, espera_base=2):
             if tentativa + 1 < tentativas:
                 logger.warning(
                     "Timeout de conexão (%s) (tentativa %d/%d), aguardando %ds...",
-                    type(e).__name__, tentativa + 1, tentativas, espera_base,
-                )
-                time.sleep(espera_base)
-        except GoogleAPICallError as e:
-            ultimo_erro = e
-            if tentativa + 1 < tentativas:
-                logger.warning(
-                    "Erro de API (%s) (tentativa %d/%d), aguardando %ds...",
                     type(e).__name__, tentativa + 1, tentativas, espera_base,
                 )
                 time.sleep(espera_base)
@@ -228,7 +221,7 @@ def llm(
         max_output_tokens=max_tokens, temperature=temperatura
     )
     model = _cria_modelo(sistema, generation_config)
-    request_options = {"timeout": TIMEOUT_REQUEST_S}
+    request_options = _request_options()
 
     if historico_chat:
         historico_truncado = historico_chat[-(MAX_TURNOS_HISTORICO * 2):]
@@ -262,7 +255,7 @@ def llm_stream(
         max_output_tokens=max_tokens, temperature=temperatura
     )
     model = _cria_modelo(sistema, generation_config)
-    request_options = {"timeout": TIMEOUT_REQUEST_S}
+    request_options = _request_options()
 
     if historico_chat:
         historico_truncado = historico_chat[-(MAX_TURNOS_HISTORICO * 2):]
