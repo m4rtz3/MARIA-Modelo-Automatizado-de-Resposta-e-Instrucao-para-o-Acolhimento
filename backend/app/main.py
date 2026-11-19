@@ -157,8 +157,8 @@ async def lifespan(app: FastAPI):
     carregar_datasets()  # carrega os CSVs do pipeline (opcional, pra /api/stats e function calling)
 
     if DATABASE_URL:
-        # O modo pgvector não carrega a KB local nem seus embeddings, mas
-        # ainda precisa das meta-instruções para montar o prompt do chat.
+        # O modo pgvector não carrega embeddings locais; mantém meta-instruções
+        # e chunks de dashboards para montar o contexto do chat sem vetorizar.
         kb.carregar_meta_instrucao()
         # Pool síncrono (ver app/db.py) — abrir é uma chamada bloqueante,
         # roda numa thread pra não travar o loop do FastAPI no startup.

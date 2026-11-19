@@ -7,6 +7,7 @@ intencional, porque esse prompt já passou por iteração e ajuste fino.
 """
 import asyncio
 import logging
+import unicodedata
 from typing import Iterator, List, Optional
 
 from app.data_analysis import (
@@ -15,6 +16,7 @@ from app.data_analysis import (
     pergunta_pede_dados_reais,
 )
 from app.config import LIMIAR_SIMILARIDADE
+from app.dashboard_context import selecionar_contexto_dashboard
 from app.kb import kb
 from app.llm import llm, llm_stream
 from app.retrieval import busca, busca_multipla, decompoe_pergunta, extrair_localizacao
@@ -123,6 +125,15 @@ def _ultima_msg_usuario(historico: Optional[List[dict]]) -> str:
     return ""
 
 
+def _eh_pergunta_sobre_dashboard(pergunta: str) -> bool:
+    normalizada = unicodedata.normalize("NFD", pergunta.lower())
+    normalizada = "".join(
+        caractere for caractere in normalizada
+        if unicodedata.category(caractere) != "Mn"
+    )
+    return any(termo in normalizada for termo in ("dashboard", "painel", "tableau"))
+
+
 # temperatura=0.6: maria() é uma tarefa de COMPOSIÇÃO/REDAÇÃO de texto
 # ("redigir" uma resposta empática, não extrair/classificar) — 0.0 deixava
 # as respostas robóticas/repetitivas demais pra um chatbot de apoio;
@@ -151,18 +162,33 @@ async def _preparar_prompt(
         query = f"{ultima} {pergunta}"
 
     mensagem_trivial = _eh_mensagem_trivial(pergunta)
+    pergunta_dashboard = _eh_pergunta_sobre_dashboard(query)
     if mensagem_trivial:
         contextos = []
         if debug:
             logger.debug("Mensagem trivial — pulando decomposição/retrieval")
     else:
-        subperguntas = await decompoe_pergunta(query, historico=historico, debug=debug)
-        contextos = await busca_multipla(
-            subperguntas,
-            top_k_por_subpergunta=top_k,
-            top_k_final=max(top_k, 4) - 1,
-            debug=debug,
-        )
+        if pergunta_dashboard:
+            contextos = selecionar_contexto_dashboard(
+                query,
+                kb.chunks_dashboards,
+                top_k=max(top_k, 4) - 1,
+            )
+            if not contextos:
+                contextos = await busca_multipla(
+                    [{"tipo": "dashboards", "pergunta": query}],
+                    top_k_por_subpergunta=top_k,
+                    top_k_final=max(top_k, 4) - 1,
+                    debug=debug,
+                )
+        else:
+            subperguntas = await decompoe_pergunta(query, historico=historico, debug=debug)
+            contextos = await busca_multipla(
+                subperguntas,
+                top_k_por_subpergunta=top_k,
+                top_k_final=max(top_k, 4) - 1,
+                debug=debug,
+            )
 
         # CONSULTA A DADOS REAIS — roteador independente do de KB acima:
         # decompoe_pergunta()/busca_multipla() cuidam só das categorias de
@@ -172,7 +198,9 @@ async def _preparar_prompt(
         # — padrão "Router Query Engine": dois mecanismos de busca
         # independentes, resultados combinados no mesmo contexto final.
         dados_texto = ""
-        pede_dados = pergunta_pede_dados_reais(pergunta)
+        pede_dados = (
+            not pergunta_dashboard and pergunta_pede_dados_reais(pergunta)
+        )
         if pede_dados:
             dados_texto = await asyncio.to_thread(
                 consultar_dados_via_function_calling, pergunta, debug
@@ -218,12 +246,11 @@ async def _preparar_prompt(
         and not consulta_dados_disponivel
     )
 
-    # consulta_dados NÃO é truncado em 300 chars como os chunks de texto da
-    # KB — são números já resumidos por analisar_dados()/function calling
-    # (não prosa solta), e cortar no meio perderia justamente a estatística
-    # pedida.
+    # Consultas calculadas e chunks de dashboards são preservados por inteiro;
+    # os demais chunks da KB permanecem limitados para controlar o tamanho do prompt.
     contexto_buscado = "\n".join(
-        f'[{c["titulo"]}] {c["texto"]}' if c.get("tipo") == "consulta_dados"
+        f'[{c["titulo"]}] {c["texto"]}'
+        if c.get("tipo") in {"consulta_dados", "dashboards"}
         else f'[{c["titulo"]}] {c["texto"][:300]}'
         for c in contextos
     )

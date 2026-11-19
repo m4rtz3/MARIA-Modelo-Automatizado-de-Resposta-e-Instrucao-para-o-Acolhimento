@@ -299,6 +299,10 @@ sql/
 - O pipeline mantém hardening da pergunta, busca múltipla, retry em erros
   temporários do Gemini (até 3 tentativas, com espera curta) e function
   calling para consultar dados do projeto quando a pergunta pede estatísticas.
+- Perguntas que mencionam dashboards ou painéis do Projeto MARIA são roteadas
+  diretamente para a categoria `dashboards` e usam trechos da KB carregados
+  no startup, sem depender do índice pgvector. Esses trechos são enviados por
+  inteiro ao modelo e não são substituídos por consultas aos CSVs do pipeline.
 - O histórico de conversas fica no `localStorage` do navegador e é enviado
   ao backend e ao Gemini como contexto para gerar respostas. O backend não
   persiste relatos nem os envia ao dashboard; a API de estatísticas lê apenas

@@ -113,13 +113,15 @@ class KnowledgeBase:
     def __init__(self) -> None:
         self.chunks: List[dict] = []
         self.chunks_meta: List[dict] = []
+        self.chunks_dashboards: List[dict] = []
         self.embeddings: Optional[np.ndarray] = None
         self.carregada = False
 
     def carregar_meta_instrucao(self) -> None:
-        """Carrega somente as meta-instruções, sem inicializar embeddings."""
+        """Carrega meta-instruções e dashboards sem inicializar embeddings."""
         if not KB_PATH.exists():
             self.chunks_meta = []
+            self.chunks_dashboards = []
             logger.warning(
                 "Arquivo da base de conhecimento não encontrado em %s — "
                 "meta-instruções não carregadas.",
@@ -128,12 +130,14 @@ class KnowledgeBase:
             return
 
         texto = KB_PATH.read_text(encoding="utf-8")
-        self.chunks_meta = [
-            chunk
-            for chunk in chunk_hierarquico(texto)
-            if chunk["tipo"] == "meta_instrucao"
-        ]
-        logger.info("Meta-instruções carregadas: %d", len(self.chunks_meta))
+        todos_chunks = chunk_hierarquico(texto)
+        self.chunks_meta = [c for c in todos_chunks if c["tipo"] == "meta_instrucao"]
+        self.chunks_dashboards = [c for c in todos_chunks if c["tipo"] == "dashboards"]
+        logger.info(
+            "Meta-instruções carregadas: %d | chunks de dashboards: %d",
+            len(self.chunks_meta),
+            len(self.chunks_dashboards),
+        )
 
     def carregar(self, enriquecimento_extra: str = "") -> None:
         if not KB_PATH.exists():
@@ -150,6 +154,7 @@ class KnowledgeBase:
         _todos_chunks = chunk_hierarquico(kb_texto)
         chunks = [c for c in _todos_chunks if c["tipo"] != "meta_instrucao"]
         chunks_meta = [c for c in _todos_chunks if c["tipo"] == "meta_instrucao"]
+        chunks_dashboards = [c for c in _todos_chunks if c["tipo"] == "dashboards"]
 
         logger.info("Chunks pesquisáveis: %d | meta-instrução: %d", len(chunks), len(chunks_meta))
         for tipo, n in Counter(c["tipo"] for c in chunks).items():
@@ -179,6 +184,7 @@ class KnowledgeBase:
 
         self.chunks = chunks
         self.chunks_meta = chunks_meta
+        self.chunks_dashboards = chunks_dashboards
         self.embeddings = embeddings_chunks
         self.carregada = True
 
