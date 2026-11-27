@@ -24,7 +24,7 @@ from typing import Dict, Optional
 import pandas as pd
 from google.generativeai.generative_models import GenerativeModel
 
-from app.config import DADOS_BI_PATH, MODELO_LLM, TIMEOUT_REQUEST_S
+from app.config import DADOS_BI_PATH, KB_PATH, MODELO_LLM, TIMEOUT_REQUEST_S
 from app.llm import _chama_com_retry
 
 logger = logging.getLogger("maria.data_analysis")
@@ -329,7 +329,46 @@ def _consulta_dataset_geral(ano: Optional[int] = None):
         ano=ano,
     )
     if resumo is None:
-        return []
+        arquivo_referencia = _arquivos_csv.get("features_vitima")
+        if not arquivo_referencia:
+            return []
+
+        n = 0
+        with pd.read_csv(
+            arquivo_referencia,
+            usecols=["chave_linkage"],
+            chunksize=_TAMANHO_BLOCO_CSV,
+        ) as blocos:
+            for bloco in blocos:
+                if ano is None:
+                    n += len(bloco)
+                else:
+                    n += int(
+                        bloco["chave_linkage"].astype("string").str.contains(
+                            f"_{ano}_", na=False
+                        ).sum()
+                    )
+
+        if ano is not None:
+            if n:
+                nota = f"(filtrado para {ano}: {n:,} chaves)"
+            else:
+                nota = "(sem dados para esse ano)"
+                n = 0
+                with pd.read_csv(
+                    arquivo_referencia,
+                    usecols=["chave_linkage"],
+                    chunksize=_TAMANHO_BLOCO_CSV,
+                ) as blocos:
+                    n = sum(len(bloco) for bloco in blocos)
+                nota += ", mostrando total"
+        else:
+            nota = ""
+
+        return [
+            f"DATASET {nota}: {n:,} chaves compostas distintas "
+            "(unidade consolidada do pipeline; não são pessoas individuais)"
+        ]
     n = resumo["n"]
     colunas = _colunas_csv.get("MARIA_chaves", [])
     linhas = [f"DATASET {nota}: {n:,} pessoas, {len(colunas)} variáveis"]
@@ -462,6 +501,31 @@ def _consulta_territorial(ano: Optional[int] = None):
     return linhas
 
 
+def _consulta_distribuicao_risco():
+    """Extrai a tabela descritiva da própria base de conhecimento."""
+    if not KB_PATH.is_file():
+        return []
+    texto = KB_PATH.read_text(encoding="utf-8")
+    inicio = texto.find("### Distribuição descritiva dos níveis basal, moderado e alto")
+    if inicio < 0:
+        return []
+    secao = texto[inicio:]
+    fim = secao.find("\n### ", 20)
+    if fim >= 0:
+        secao = secao[:fim]
+
+    linhas = ["Distribuição descritiva do pipeline:"]
+    for linha in secao.splitlines():
+        if re.match(r"^\|\s*(Basal|Moderado|Alto)\s*\|", linha, re.IGNORECASE):
+            partes = [p.strip() for p in linha.strip().strip("|").split("|")]
+            if len(partes) >= 3:
+                linhas.append(f"  {partes[0]}: {partes[1]} chaves ({partes[2]})")
+    linhas.append(
+        "  São categorias descritivas; não são probabilidades, diagnósticos ou previsões individuais."
+    )
+    return linhas if len(linhas) > 1 else []
+
+
 def _consulta_datasenado():
     arquivo = _csvs_sob_demanda.get("features_datasenado")
     if not arquivo:
@@ -482,6 +546,17 @@ def _consulta_datasenado():
             quantidades[coluna] = quantidades.get(coluna, 0) + len(valores)
 
     linhas = [f"PESQUISA DATA SENADO ({n_linhas:,} linhas; médias dos indicadores):"]
+    indicadores_diretos = {
+        "ds_pct_ja_sofreu_violencia_2025":
+            "Violência doméstica declarada ao longo da vida",
+        "ds_pct_violencia_12m_2025":
+            "Violência doméstica declarada nos últimos 12 meses",
+    }
+    for coluna, rotulo in indicadores_diretos.items():
+        if coluna in somas and quantidades[coluna]:
+            linhas.append(
+                f"  {rotulo}: {somas[coluna] / quantidades[coluna]:.0f}%"
+            )
     for coluna in sorted(somas):
         if quantidades[coluna]:
             rotulo = coluna.removeprefix("ds_regiao_pct_").removeprefix("ds_pct_").replace("_", " ")
@@ -541,6 +616,8 @@ def analisar_dados(pergunta: str) -> str:
     if (_match(p, "vitima") or _match(p, "gestante") or _match(p, "lesao")
             or _match(p, "escolaridade") or _match(p, "idade") or _match(p, "dados")):
         resultados.extend(_consulta_vitima(ano))
+    if _match(p, "risco"):
+        resultados.extend(_consulta_distribuicao_risco())
     if _match(p, "agressor") or _match(p, "vinculo") or _match(p, "alcool") or _match(p, "dados"):
         resultados.extend(_consulta_agressor(ano))
     if _match(p, "historico") or _match(p, "violencia") or _match(p, "dados"):
@@ -607,6 +684,7 @@ def pergunta_pede_dados_reais(pergunta: str) -> bool:
 # ---------------------------------------------------------------------
 _FERRAMENTAS_DADOS = {
     "consultar_dataset_geral": _consulta_dataset_geral,
+    "consultar_distribuicao_risco": _consulta_distribuicao_risco,
     "consultar_perfil_vitima": _consulta_vitima,
     "consultar_perfil_agressor": _consulta_agressor,
     "consultar_historico": _consulta_historico,
@@ -621,7 +699,8 @@ _TOOLS_DADOS = [{
             "name": "consultar_dataset_geral",
             "description": ("Retorna o tamanho total do dataset e a distribuição de "
                              "nível de risco (basal/moderado/alto). Use para perguntas "
-                             'gerais do tipo "quantas pessoas"/"o dataset todo".'),
+                             'sobre quantas chaves foram analisadas, quantas pessoas '
+                             'foram analisadas ou o tamanho da base consolidada.'),
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -683,6 +762,15 @@ _TOOLS_DADOS = [{
             },
         },
         {
+            "name": "consultar_distribuicao_risco",
+            "description": (
+                "Retorna a distribuição descritiva basal/moderado/alto "
+                "registrada na base de conhecimento do pipeline. Use para "
+                "perguntas sobre distribuição de níveis de risco."
+            ),
+            "parameters": {"type": "object", "properties": {}},
+        },
+        {
             "name": "consultar_pesquisa_datasenado",
             "description": ("Calcula as médias dos indicadores agregados da pesquisa DataSenado. "
                              "Use para perguntas explicitamente sobre a pesquisa DataSenado ou opinião pública."),
@@ -723,6 +811,9 @@ _SISTEMA_ROTEADOR_DADOS = (
     "se a pergunta cruzar categorias). Se a pergunta for uma explicação de "
     "lei, uma orientação de conduta, ou não pedir número nenhum, NÃO chame "
     "nenhuma função."
+    " Para gestacao, gravidez ou vítimas gestantes no pipeline, use "
+    "consultar_perfil_vitima para obter o indicador agregado por chave "
+    "em vez de tomar dados de painel por notificacoes."
 )
 
 

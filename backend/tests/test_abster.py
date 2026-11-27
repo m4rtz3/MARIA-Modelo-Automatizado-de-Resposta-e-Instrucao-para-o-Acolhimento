@@ -77,8 +77,30 @@ class AbstencaoTests(unittest.TestCase):
         resultado, llm_mock = self.executar_maria(0.20, trivial=True)
 
         self.assertFalse(resultado["absteve"])
-        self.assertEqual(resultado["score_max_recuperacao"], 0.0)
-        llm_mock.assert_called_once()
+        self.assertEqual(resultado["score_max_recuperacao"], 1.0)
+        llm_mock.assert_not_called()
+
+    def test_obrigado_responde_diretamente_sem_llm(self):
+        with patch.object(maria_module, "llm") as llm_mock:
+            resultado = asyncio.run(maria_module.maria("Muito obrigado pela ajuda!"))
+
+        self.assertFalse(resultado["absteve"])
+        self.assertEqual(resultado["score_max_recuperacao"], 1.0)
+        self.assertIn("De nada", resultado["resposta"])
+        llm_mock.assert_not_called()
+
+    def test_obrigado_stream_responde_diretamente_sem_llm_stream(self):
+        with patch.object(maria_module, "llm_stream") as llm_stream_mock:
+            fragmentos, _, score_max, absteve = asyncio.run(
+                maria_module.maria_stream("Obrigada!")
+            )
+
+        self.assertEqual(list(fragmentos), [
+            "De nada! Estou aqui para ajudar. "
+        ])
+        self.assertEqual(score_max, 1.0)
+        self.assertFalse(absteve)
+        llm_stream_mock.assert_not_called()
 
     def test_consulta_a_dados_sem_contexto_kb_nao_abstem(self):
         resultado, llm_mock = self.executar_maria(

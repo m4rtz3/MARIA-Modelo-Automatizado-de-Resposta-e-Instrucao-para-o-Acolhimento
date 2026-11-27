@@ -30,7 +30,8 @@ logger = logging.getLogger("maria.retrieval")
 TIPOS_KB = {
     "legislacao": (
         "Artigos da Lei Maria da Penha, Lei do Feminicídio e Lei da Misoginia — "
-        "os 5 tipos de violência, penas, medidas protetivas, o que é crime."
+        "os tipos vigentes de violência previstos no art. 7º, incluindo violência vicária, "
+        "penas, medidas protetivas e o que é crime."
     ),
     "pipeline_dados": (
         "Achados estatísticos do pipeline de dados do próprio projeto MARIA "

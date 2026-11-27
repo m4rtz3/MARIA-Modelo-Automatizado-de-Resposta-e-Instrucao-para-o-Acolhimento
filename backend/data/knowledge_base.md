@@ -596,120 +596,161 @@ O Ministério Público pode receber comunicações e atuar dentro de suas atribu
 ---
 
 ## BLOCO 5 | DASHBOARDS DO PROJETO MARIA
- 
-O projeto inclui oito painéis interativos publicados no Tableau Public. Todos usam dados do SINAN (notificações de violência, exceto autoagressão) e do SIM (óbitos por agressão), período 2015-2024. Um caso pode ter mais de um tipo de violência e mais de um meio de agressão, então as somas costumam passar de 100%. Os registros com UF = "BR" foram excluídos de todos os painéis.
- 
+
+O projeto inclui **dez painéis interativos** publicados no Tableau Public. Os painéis 1 a 8 apresentam análises dos registros do SINAN (notificações de violência, exceto autoagressão) e do SIM (óbitos por agressão), com recorte de 2015 a 2024. O Painel 9 aprofunda a dimensão histórica das notificações e sua relação com desfechos letais por chave composta. O Painel 10 apresenta indicadores contextuais da Pesquisa Nacional de Violência contra a Mulher do DataSenado 2025.
+
+**Atenção às fontes:** o DataSenado é uma pesquisa amostral, enquanto SINAN e SIM são sistemas administrativos. Seus percentuais e totais não devem ser combinados como se tivessem a mesma população, metodologia ou unidade de análise.
+
+Nos painéis 1 a 8, um registro pode apresentar mais de um tipo de violência e mais de um meio de agressão; por isso, somas de categorias podem ultrapassar 100%. Os registros com UF = "BR" foram excluídos desses oito painéis.
+
+### Acesso aos dez painéis
+
+1. [Panorama](https://public.tableau.com/views/Panorama_Violncia_Domstica/1Panorama?:showVizHome=no&:language=pt-BR&:display_count=n&:embed=true)
+2. [Perfil da vítima](https://public.tableau.com/views/Quemavtima/2Vtima?:showVizHome=no&:language=pt-BR&:display_count=n&:embed=true)
+3. [Perfil do agressor](https://public.tableau.com/views/Quemagride/3Agressor?:showVizHome=no&:language=pt-BR&:display_count=n&:embed=true)
+4. [Características da agressão](https://public.tableau.com/views/Comoeondeaconteceaagresso/4Agresso?:showVizHome=no&:language=pt-BR&:display_count=n&:embed=true)
+5. [Menores](https://public.tableau.com/views/Vtimasmenoresde18anos/5Menores?:showVizHome=no&:language=pt-BR&:display_count=n&:embed=true)
+6. [Gestantes](https://public.tableau.com/views/Vtimasgestantes/6Gestantes?:showVizHome=no&:language=pt-BR&:display_count=n&:embed=true)
+7. [Qualidade dos dados](https://public.tableau.com/views/Qualidadedosdados_17956546591230/7Qualidade?:showVizHome=no&:language=pt-BR&:display_count=n&:embed=true)
+8. [SINAN x SIM](https://public.tableau.com/views/Quemnotificadaequemmorre/8SINANxSIM?:showVizHome=no&:language=pt-BR&:display_count=n&:embed=true)
+9. [Histórico](https://public.tableau.com/views/Histricorepetiodenotificaesedesfecholetal/9Histrico?:showVizHome=no&:language=pt-BR&:display_count=n&:embed=true)
+10. [Contexto DataSenado](https://public.tableau.com/views/DataSenado2025/10ContextoDataSenado?:showVizHome=no&:language=pt-BR&:display_count=n&:embed=true)
+
 ### Painel 1: Panorama — violência doméstica no Brasil, 2015-2024
- 
+
 Visão geral da série histórica. Mostra três indicadores principais: total de notificações de violência no SINAN (exceto autoagressão) em 2015-2024 = 2.785.288; total de óbitos por violência no SIM em 2015-2024 = 41.371; razão de óbitos por 1.000 notificações = 14,9. Essa razão não é taxa de letalidade; é a proporção entre as duas bases, que têm cobertura e critérios distintos.
- 
+
 Gráficos incluídos: notificações por ano (crescimento de 193 mil em 2015 para pico de 425 mil em 2022-2023); óbitos por ano (variação entre 3,6 mil e 4,9 mil, pico em 2017); razão óbitos por 1.000 notificações por ano (caiu de 23,9 em 2015 para 8,5 em 2024, refletindo o crescimento das notificações); mapa com a razão por estado (quanto maior, pode indicar subnotificação no SINAN); tipos de violência ao longo dos anos em percentual (física predomina com 60-70%, psicológica cresceu de 14% para 26%, sexual estável em torno de 16%, negligência estável em torno de 17%).
- 
+
 Como ler: o mapa mostra estados com razão alta, não necessariamente os mais violentos — pode indicar subnotificação no SINAN. A queda da razão ao longo dos anos não significa redução da violência, mas aumento do registro de notificações.
- 
+
 ### Painel 2: Quem é a vítima?
- 
+
 Perfil das mulheres notificadas no SINAN, sem autoagressão, 2015-2024.
- 
+
 Idade: média de 27 anos; mínima registrada 0 (menores de 1 ano, tratados como bebês); máxima 120 (limite do campo). Faixas com mais notificações: 15-20 anos e 25-30 anos (pico em torno de 15 e 25 anos). Reincidência por faixa etária: varia de 43,9% nas menores de 17 anos a 53,9% nas mulheres de 45-59 anos.
- 
+
 Raça/cor: parda 44,9%; branca 36,7%; preta 9,1%; indígena 1,1%; amarela 0,8%.
- 
+
 Escolaridade: fundamental incompleto 23,4%; médio completo 17,7%; médio incompleto 8,1%; fundamental completo 5,6%; superior completo 2,6%; superior incompleto 2,2%; analfabeto 1,1%. Campo com 24,4% sem informação.
- 
+
 Situação conjugal: solteira 36,2%; casada 23,7%; não se aplica 22%; separada 4,8%; viúva 2%.
- 
+
 Como ler: escolaridade e situação conjugal têm ausência de informação relevante. Não usar esses dados para afirmar que a violência afeta só determinado perfil; ela afeta mulheres em todos os grupos.
- 
+
 ### Painel 3: Quem agride?
- 
+
 Perfil do agressor nas notificações do SINAN, 2015-2024.
- 
+
 Sexo: masculino 63,4%; feminino 17,4% (inclui casos com mais de um agressor, registrados como "Ambos" = 10%; sem registro = 9,2%).
- 
+
 Vínculo principal com a vítima: família 27,4%; parceiro atual 21,1%; conhecido 12,4%; desconhecido 10,7%; ex-parceiro 9,5%; sem informação 8,9%; outros 7,9%; cuidador/autoridade 2,1%.
- 
+
 Reincidência por vínculo: ex-parceiro lidera (70,2%); parceiro atual (67,5%); família (51,7%); outros (43,5%); cuidador/autoridade (35,6%); sem informação (32,6%); conhecido (28,7%); desconhecido (14,1%).
- 
+
 Vínculo por faixa etária da vítima: parceiro atual é o vínculo mais comum nas faixas de 25-44 anos (35-37%); família predomina nas menores de 17 anos (52,3%) e nas maiores de 60 anos (38,5%); ex-parceiro concentra-se nas faixas de 25-44 anos.
- 
+
 Idade mediana da vítima por vínculo: família, agressor mediana 10-23 anos; conhecido 13-35 anos; outros 10-42 anos; parceiro atual 24-41 anos; ex-parceiro 24-39 anos.
- 
+
 Evolução temporal: parceiro atual manteve participação estável em torno de 20-21%; família cresceu de 20,7% para 28,9% em 2024; ex-parceiro caiu de 10% para 8,3%.
- 
+
 Como ler: "Ambos" indica mais de um agressor na mesma notificação. O vínculo "família" inclui pai, mãe, irmão e outros familiares, e não apenas o parceiro íntimo. Não interpretar esses dados como perfil psicológico do agressor.
- 
+
 ### Painel 4: Como e onde acontece a agressão?
- 
+
 Tipos de violência, meios usados, local da ocorrência e relação da violência sexual com o uso de álcool. SINAN, 2015-2024.
- 
+
 Tipos de violência por faixa etária (% das notificações de cada faixa, um caso pode ter mais de um tipo): física predomina em quase todas as faixas (84,4% nas 18-24 anos; 85,7% nas 25-34 anos); sexual é mais frequente nas menores de 17 anos (33,4%) e nas maiores de 60 anos (2,4%); negligência aparece muito nas menores de 17 anos (34,5%) e nas maiores de 60 anos (33,5%); psicológica cresce com a idade até 45-59 anos (37,8%).
- 
+
 Meios de agressão mais usados (valor absoluto, um caso pode ter mais de um): força corporal 1.508.831; ameaça 517.949; outros 392.304; objeto cortante 224.652; objeto contundente 152.080; enforcamento 118.198; arma de fogo 83.199; envenenamento 45.397; objeto quente 29.239.
- 
+
 Local da ocorrência: residência 61%; via pública 14,6%; ignorado/não informado 10,3%; estabelecimento de saúde e bar somam o restante.
- 
+
 Tipos de violência mais registrados em números absolutos: física 1.800.818; psicológica 782.378; sexual 486.869; negligência 446.706; tortura 75.917; financeira 58.918; outra 48.705; trabalho infantil 12.355; intervenção legal 8.842; tráfico de pessoas 1.980.
- 
+
 Violência sexual e álcool: nas notificações de violência sexual, 20,9% dos casos registram uso de álcool pelo agressor; nas demais violências, 28%. O campo álcool tem 32% de ausência de informação.
- 
+
 ### Painel 5: Vítimas menores de 18 anos
- 
+
 Crianças e adolescentes (0 a 17 anos) nas notificações do SINAN, sem autoagressão, 2015-2024.
- 
+
 Total: 1.033.106 notificações, 37,1% do total da base.
- 
+
 Distribuição por idade: maior concentração no primeiro ano de vida (9,4%), seguida de queda até os 5 anos e crescimento a partir dos 12-13 anos (pico de 7,6% aos 13 anos).
- 
+
 Tipos de violência contra menores de 18 anos: física 374.762; negligência (valor aproximado de física, segunda maior); sexual 344.611; psicológica 190.800; tortura 18.017; trabalho infantil 12.070; financeira 6.084; intervenção legal 2.440; tráfico de pessoas 636.
- 
+
 Quem agride menores de 18 anos: família 52,3%; conhecido 14,1%; outros 9,1%; sem informação 8,4%; desconhecido 7,3%; parceiro atual 5,4%; cuidador/autoridade 2,1%; ex-parceiro 1,3%.
- 
+
 Como ler: para menores de 18 anos, a família é o principal agressor, o que é diferente do padrão geral da base. A negligência é muito mais frequente nessa faixa do que nas adultas.
- 
+
 ### Painel 6: Vítimas gestantes
- 
+
 Mulheres notificadas como gestantes no SINAN, sem autoagressão, 2015-2024.
- 
+
 Total: 117.998 gestantes, 9,2% das que informaram o campo. O campo gestante tem 53,8% de ausência de informação, então esse número é subestimado.
- 
+
 Faixa etária: 0-17 anos 36,8%; 18-24 anos 26,3%; 25-34 anos 26,4%; 35-44 anos 9%; 45-59 anos 1,3%; 60 anos ou mais 0,2%.
- 
+
 Tipos de violência contra gestantes: física 64.405; sexual 48.554; psicológica 33.475; negligência 8.155; tortura 3.407; outros; trabalho infantil 242; intervenção legal 209; tráfico de pessoas 87.
- 
+
 Quem agride gestantes: parceiro atual 45,8%; desconhecido 11,5%; ex-parceiro 11,5%; família 10,2%; conhecido 9,7%; sem informação 5,7%; outros 4,5%; cuidador/autoridade 1,1%.
- 
+
 Como ler: a gestação é fator de vulnerabilidade. O parceiro atual é o agressor em quase metade dos casos de gestantes, percentual maior do que no painel geral. O campo gestante tem muita ausência de informação; os números representam o mínimo identificado, não o total real.
- 
+
 ### Painel 7: Qualidade dos dados
- 
+
 Quanto falta de informação em cada campo das notificações do SINAN, sem autoagressão, 2015-2024.
- 
+
 Campos com maior ausência: evolução do caso 100% (o desfecho do SINAN é sempre "notificação"; óbito vem do SIM); gestante 53,8%; usou álcool 32%; escolaridade 24,4%; reincidência 23,4%; meio da violência 15,9%; situação conjugal 11,5%; local 10,3%; sexo do agressor 10%; vínculo 8,9%; raça/cor da vítima 7,3%.
- 
+
 O que isso significa para a análise: o SIM traz apenas dados da vítima, do local e do meio — agressor, gestante, reincidência e uso de álcool não existem no SIM e aparecem como "não se aplica" nas comparações. Escolaridade e situação conjugal do SIM têm categorias diferentes das do SINAN, então não dá para compará-las diretamente. Local no SIM é o local do óbito (hospital, por exemplo), não o lugar da agressão. Meios e tipos: um caso pode ter mais de um, então a soma dos percentuais passa de 100%.
- 
+
 ### Painel 8: Quem é notificada e quem morre (SINAN x SIM)
- 
+
 Comparação entre o perfil de quem é notificada no SINAN e o perfil de quem morre registrado no SIM. Cada fonte soma 100%, então a comparação é de perfil, não de quantidade.
- 
+
 Meios de agressão — diferença entre SINAN e SIM: arma de fogo aparece em 2,1% das notificações do SINAN mas em 50,1% dos óbitos do SIM; objeto cortante aparece em 4,2% no SINAN e 25,7% no SIM; enforcamento 0,4% no SINAN e 6,2% no SIM; força corporal 36,9% no SINAN mas apenas 2,5% no SIM. Ameaça e envenenamento só aparecem no SINAN (campo não comparável no SIM).
- 
+
 Leitura: os meios que mais matam (arma de fogo, objeto cortante, enforcamento) são sub-representados nas notificações do SINAN. Isso pode indicar que muitas vítimas fatais nunca chegaram a notificar a violência antes do óbito.
- 
+
 Idade — SINAN x SIM: no SINAN, 37,1% das notificações são de menores de 17 anos; no SIM, apenas 10,9% dos óbitos estão nessa faixa. As faixas de 25-44 anos concentram mais mortes (SIM) do que notificações (SINAN).
- 
+
 Raça/cor — SINAN x SIM: mulheres pardas representam 48,4% das notificadas no SINAN e 61,6% das mortas no SIM; mulheres brancas representam 39,6% no SINAN e 30,3% no SIM. Essa diferença indica maior letalidade proporcional entre mulheres pardas e pretas.
- 
+
 Local — SINAN x SIM: via pública representa 14,6% das notificações no SINAN e 27,9% dos óbitos no SIM; estabelecimento de saúde representa 22,2% dos óbitos no SIM (local do óbito, não da agressão) mas apenas frações do SINAN.
- 
+
 Como ler: este painel compara perfis, não quantidades absolutas. As diferenças indicam que o perfil de quem morre é diferente do perfil de quem notifica, o que reforça a hipótese de subnotificação entre os grupos com maior letalidade.
 
-### Como o assistente deve usar os dados dos dashboards
- 
-Ao responder perguntas sobre os dashboards, identificar sempre o painel de origem e o ano de referência (2015-2024 para todos). Não combinar percentuais de painéis diferentes como se fossem da mesma base sem explicar as diferenças. Não transformar percentuais de perfil em afirmações sobre mulheres individuais. Ao mencionar ausência de informação em campos específicos, indicar o percentual correspondente do Painel 7. Ao comparar SINAN e SIM, explicar que são bases com propósitos diferentes: o SINAN registra notificações de violência e o SIM registra óbitos, e a unidade de análise é distinta.
+### Painel 9: Histórico — repetição de notificações e desfecho letal por chave
 
----
+Painel voltado à dimensão temporal dos registros associados às chaves compostas. A descrição do painel informa que ele reúne informações sobre repetição de notificações, escalada e relação com desfecho letal por chave.
+
+A unidade de análise é a **chave composta**, não uma pessoa individualmente identificada. A chave reúne atributos demográficos e territoriais usados no linkage e não funciona como identificador pessoal único. Portanto, o painel não deve ser descrito como um histórico individual comprovado de cada mulher.
+
+Para contextualizar os indicadores históricos, a base consolidada do pipeline registrou média de 10,67 notificações por chave e mediana de 2 notificações por chave. O indicador `hist_tem_escalada_walker` foi positivo em 90.801 chaves (24,98%). Esses números são estatísticas do pipeline descritas no Bloco 2; não devem ser atribuídos automaticamente a gráficos específicos do Painel 9 sem conferência do conteúdo visual do Tableau.
+
+A classificação de nível alto no pipeline está associada a registro de óbito por agressão no SIM, conforme os critérios de integração adotados. Essa classificação é descritiva e agregada por chave; não representa previsão de morte, probabilidade individual ou avaliação de risco de uma pessoa.
+
+Como ler: repetição de notificações indica recorrência nos registros associados à chave; escalada é um indicador operacional de padrão temporal; relação com desfecho letal deve ser interpretada no contexto do linkage SINAN × SIM. A ausência de correspondência entre bases não comprova que uma mulher específica nunca tenha sido notificada ou atendida.
+
+### Painel 10: Contexto DataSenado — Pesquisa Nacional de Violência contra a Mulher 2025
+
+Painel de indicadores contextuais baseados na Pesquisa Nacional de Violência contra a Mulher de 2025, realizada pelo Instituto DataSenado em parceria com o Observatório da Mulher contra a Violência. Diferentemente dos painéis 1 a 9, sua fonte é uma pesquisa amostral, e não o cruzamento de registros administrativos do SINAN e do SIM.
+
+A pesquisa entrevistou 21.641 mulheres com 16 anos ou mais, por telefone, entre 16 de maio e 8 de julho de 2025, em amostra probabilística distribuída pelas 27 unidades da Federação. A população-alvo dos resultados gerais é formada por mulheres cisgênero com 16 anos ou mais; o relatório informa também a participação de 107 mulheres trans em questionário específico.
+
+Para interpretar os indicadores do painel, consultar o Bloco 3 desta base de conhecimento, que diferencia violência declarada ao longo da vida, violência declarada nos últimos 12 meses e situações específicas de violência vivida no mesmo período. Entre os resultados de referência da pesquisa estão: 27% declararam já ter sofrido violência doméstica ou familiar provocada por homem em algum momento da vida; 4% declararam violência nos 12 meses anteriores; 33% relataram pelo menos uma das 13 situações gerais investigadas nesse período; e 10% relataram algum tipo de violência digital.
+
+Esses percentuais correspondem a perguntas, períodos e medidas diferentes. Não devem ser somados nem tratados como equivalentes. Também não devem ser comparados diretamente aos totais ou percentuais dos painéis SINAN/SIM como se tivessem o mesmo denominador ou método de coleta.
+
+Como ler: identificar a pergunta, o período de referência e a população de cada indicador. A pesquisa representa estimativas amostrais e relatos das entrevistadas; não é uma contagem administrativa de notificações nem um registro individual de todas as mulheres brasileiras.
+
+### Como o assistente deve usar os dados dos dashboards
+
+Ao responder perguntas sobre os dashboards, identificar sempre o painel de origem, a fonte e o período de referência. Para os painéis 1 a 8, o recorte é SINAN/SIM, 2015-2024. Para o Painel 9, explicitar que a análise histórica é feita por chave composta e não corresponde a um histórico individual identificado. Para o Painel 10, identificar o DataSenado 2025 como pesquisa amostral e nomear a pergunta ou medida usada.
+
+Não combinar percentuais de painéis diferentes como se fossem da mesma base sem explicar as diferenças. Não transformar percentuais de perfil em afirmações sobre mulheres individuais. Ao mencionar ausência de informação em campos específicos dos painéis SINAN, indicar o percentual correspondente do Painel 7. Ao comparar SINAN e SIM, explicar que são bases com propósitos diferentes: o SINAN registra notificações de violência e o SIM registra óbitos, com unidades e critérios próprios. Não misturar esses registros com as estimativas do DataSenado.
 
 ## BLOCO 6 | ORIENTAÇÕES TRANSVERSAIS PARA O CHATBOT
 

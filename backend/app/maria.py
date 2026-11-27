@@ -30,6 +30,36 @@ RESPOSTA_ABSTENCAO = (
     "WhatsApp 61 9610-0180) para falar com uma especialista."
 )
 
+FRASES_RESPOSTA_ABSTENCAO = (
+    "não encontrei informação",
+    "não tenho informações suficientes",
+    "não tenho informações na minha base",
+    "não tenho acesso",
+    "não é possível determinar",
+    "não possui",
+    "não contém",
+    "não há dados disponíveis",
+    "não há dados",
+    "não há informações disponíveis",
+    "não é possível prever",
+    "não é possível informar",
+    "não é possível confirmar",
+)
+
+
+def _resposta_indica_abstencao(resposta: str) -> bool:
+    normalizada = unicodedata.normalize("NFD", resposta.lower())
+    normalizada = "".join(
+        caractere for caractere in normalizada
+        if unicodedata.category(caractere) != "Mn"
+    )
+    return any(
+        unicodedata.normalize("NFD", frase)
+        .encode("ascii", "ignore")
+        .decode("ascii") in normalizada
+        for frase in FRASES_RESPOSTA_ABSTENCAO
+    )
+
 SYSTEM_PROMPT = """Você é MARIA, assistente sobre violência doméstica no Brasil.
 
 DIRETRIZES DE TOM, ESTILO E CONCORDÂNCIA:
@@ -52,7 +82,7 @@ COMO RESPONDER A CADA TIPO DE INTERAÇÃO:
 
 A. SE FOR UM RELATO DE PESSOA SOFRENDO VIOLÊNCIA:
    - Valide os sentimentos com empatia.
-   - Explique qual dos 5 tipos de violência se enquadra (física, psicológica, sexual, patrimonial ou moral — Art. 7º da Lei Maria da Penha) e POR QUE se enquadra.
+   - Identifique a(s) categoria(s) da Lei Maria da Penha que se enquadre(m), usando todas as categorias pertinentes disponíveis na base, e explique por que se enquadra. Não anuncie uma quantidade que não corresponda à quantidade efetivamente listada.
    - Se houver medo ou falta de recursos: foque em estratégias discretas (atendimento via WhatsApp).
    - Cite o Ligue 180 (gratuito, 24h, sigiloso, WhatsApp 61 9610-0180) ou 190 apenas se ainda não citado.
 
@@ -63,6 +93,10 @@ B. SE FOR UM HOMEM BUSCANDO REEDUCAÇÃO OU AJUDA PARA MUDAR COMPORTAMENTO:
 
 C. SE FOR UMA PERGUNTA INFORMATIVA (definição, estatística, lei):
    - Responda de forma direta e objetiva, SEM presumir a situação pessoal. Use a base de conhecimento.
+   - Se a pergunta solicitar mais de um período, indicador ou unidade, discrimine todos os elementos disponíveis no contexto. Não omita um indicador apenas porque outro apareceu primeiro.
+   - Preserve denominadores e unidades: não troque pessoas por chaves, notificações por episódios ou pesquisa por dados administrativos.
+   - Para gestação no pipeline, responda primeiro pelo indicador agregado por chave disponível no contexto. Não misture com o painel de notificações do SINAN como se fossem a mesma unidade.
+   - Não acrescente números não presentes nas informações fornecidas. Se um dado não estiver no contexto, informe que não está disponível, sem estimar.
 
 PROIBIÇÕES ABSOLUTAS:
 - Inventar estatísticas que não estejam no material fornecido.
@@ -77,6 +111,7 @@ CONTEXTO_FIXO = """Tipos de violência (Lei Maria da Penha, Art. 7º):
 - Sexual: relação não desejada, impedir contracepção (inclui dentro do casamento)
 - Patrimonial: destruir documentos, controlar dinheiro, tomar salário
 - Moral: calúnia, difamação, injúria
+- Vicária: violência praticada contra familiares ou rede de apoio para atingir a mulher
 
 Canais: 190 (emergência), Ligue 180 (24h, gratuito, sigiloso, WhatsApp 61 9610-0180), DEAM ou qualquer delegacia (medida protetiva em 48h), Defensoria Pública (jurídico gratuito)."""
 
@@ -102,6 +137,8 @@ def _system_prompt_com_meta() -> str:
 _SAUDACOES_TRIVIAIS = {
     "oi", "olá", "ola", "eae", "ei", "bom dia", "boa tarde", "boa noite",
     "obrigada", "obrigado", "obg", "vlw", "valeu", "brigada", "brigado",
+    "muito obrigada", "muito obrigado", "obrigada pela ajuda",
+    "obrigado pela ajuda", "brigada pela ajuda", "brigado pela ajuda",
     "ok", "okay", "certo", "entendi", "blz", "beleza", "tá", "ta",
     "sim", "não", "nao", "tchau", "até logo", "ate logo", "até mais",
 }
@@ -113,7 +150,63 @@ def _eh_mensagem_trivial(pergunta: str) -> bool:
     então nunca cortamos a decomposição/retrieval por causa do tamanho da
     mensagem, só por correspondência exata e inequívoca."""
     limpa = pergunta.strip().lower().rstrip("!.,?")
-    return limpa in _SAUDACOES_TRIVIAIS
+    if limpa in _SAUDACOES_TRIVIAIS:
+        return True
+
+    limpa_sem_acento = unicodedata.normalize("NFD", limpa)
+    limpa_sem_acento = "".join(
+        caractere for caractere in limpa_sem_acento
+        if unicodedata.category(caractere) != "Mn"
+    )
+    return limpa_sem_acento in {
+        "muito obrigada", "muito obrigado", "obrigada pela ajuda",
+        "obrigado pela ajuda", "brigada pela ajuda", "brigado pela ajuda",
+    } or any(
+        limpa_sem_acento.startswith(f"{termo} ")
+        for termo in ("obrigada", "obrigado", "obg", "valeu", "vlw", "brigada", "brigado")
+    ) or any(
+        limpa_sem_acento.startswith(f"{termo} ")
+        for termo in ("muito obrigada", "muito obrigado")
+    )
+
+
+def _eh_agradecimento(pergunta: str) -> bool:
+    limpa = pergunta.strip().lower().rstrip("!.,?")
+    limpa = unicodedata.normalize("NFD", limpa)
+    limpa = "".join(
+        caractere for caractere in limpa
+        if unicodedata.category(caractere) != "Mn"
+    )
+    termos = (
+        "obrigada", "obrigado", "obg", "valeu", "vlw",
+        "brigada", "brigado",
+        "muito obrigada", "muito obrigado",
+    )
+    return limpa in _SAUDACOES_TRIVIAIS or any(
+        limpa == termo or limpa.startswith(f"{termo} ")
+        for termo in termos
+    )
+
+
+def _resposta_mensagem_trivial(pergunta: str) -> str:
+    limpa = unicodedata.normalize("NFD", pergunta.strip().lower())
+    limpa = "".join(
+        caractere for caractere in limpa
+        if unicodedata.category(caractere) != "Mn"
+    )
+
+    if _eh_agradecimento(pergunta):
+        return "De nada! Estou aqui para ajudar. "
+
+    if any(limpa.startswith(saudacao) for saudacao in (
+        "oi", "ola", "eae", "ei", "bom dia", "boa tarde", "boa noite",
+    )):
+        return "Olá! Como posso ajudar você hoje?"
+
+    if any(limpa.startswith(f) for f in ("tchau", "ate logo", "ate mais")):
+        return "Até logo! Cuide-se e volte sempre que precisar."
+
+    return "Entendi. Posso ajudar com alguma outra dúvida?"
 
 
 def _ultima_msg_usuario(historico: Optional[List[dict]]) -> str:
@@ -250,7 +343,13 @@ async def _preparar_prompt(
     # os demais chunks da KB permanecem limitados para controlar o tamanho do prompt.
     contexto_buscado = "\n".join(
         f'[{c["titulo"]}] {c["texto"]}'
-        if c.get("tipo") in {"consulta_dados", "dashboards"}
+        if c.get("tipo") in {
+            "consulta_dados",
+            "dashboards",
+            "pipeline_dados",
+            "datasenado",
+            "orientacao_pratica",
+        }
         else f'[{c["titulo"]}] {c["texto"][:300]}'
         for c in contextos
     )
@@ -260,6 +359,16 @@ async def _preparar_prompt(
         extras += (
             f"\nAtenção: A pessoa mencionou a cidade/local de destino ou origem: "
             f"'{loc}'. Use exatamente este nome ao se referir ao local."
+        )
+    if any(
+        termo in unicodedata.normalize("NFD", pergunta.lower())
+        for termo in ("gestante", "gravida", "gravidez", "gestacao")
+    ):
+        extras += (
+            "\nRegra de unidade: para perguntas de gestação no pipeline, "
+            "priorize o indicador agregado por chave disponível na consulta "
+            "estruturada. Não apresente a contagem de notificações do painel "
+            "como se fosse o mesmo indicador."
         )
 
     prompt = f"""{CONTEXTO_FIXO}{extras}
@@ -285,6 +394,14 @@ async def maria(
     debug: bool = False,
 ) -> dict:
     """Retorna a resposta e os metadados da recuperação."""
+    if _eh_mensagem_trivial(pergunta):
+        return {
+            "resposta": _resposta_mensagem_trivial(pergunta),
+            "localizacao_detectada": extrair_localizacao(pergunta),
+            "score_max_recuperacao": 1.0,
+            "absteve": False,
+        }
+
     prompt, loc, score_max, absteve = await _preparar_prompt(
         pergunta, historico, top_k, debug
     )
@@ -304,12 +421,13 @@ async def maria(
         max_tokens=2048,
         temperatura=temperatura,
     )
+    absteve = absteve or _resposta_indica_abstencao(resposta)
 
     return {
         "resposta": resposta,
         "localizacao_detectada": loc,
         "score_max_recuperacao": score_max,
-        "absteve": False,
+        "absteve": absteve,
     }
 
 
@@ -321,6 +439,10 @@ async def maria_stream(
     debug: bool = False,
 ) -> tuple[Iterator[str], Optional[str], float, bool]:
     """Prepara o contexto e abre o streaming da resposta final do Gemini."""
+    if _eh_mensagem_trivial(pergunta):
+        resposta = _resposta_mensagem_trivial(pergunta)
+        return iter([resposta]), extrair_localizacao(pergunta), 1.0, False
+
     prompt, loc, score_max, absteve = await _preparar_prompt(
         pergunta, historico, top_k, debug
     )

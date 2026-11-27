@@ -1,12 +1,15 @@
-# MARIA — Chat e dashboard
+# MARIA — Chat e dashboards
 
 Aplicação web para conversar com a MARIA, um assistente sobre violência
-doméstica e os dados do projeto, e consultar um dashboard Tableau.
+doméstica e os dados do projeto, e explorar oito dashboards Tableau. A aba
+de dashboards destaca automaticamente o painel relacionado aos temas mais
+recorrentes nas conversas salvas, sem impedir a seleção manual de qualquer
+outro painel.
 
 ## Componentes
 
-- **`frontend/`**: interface React + Vite + Tailwind. Apresenta o chat e o
-  dashboard Tableau; conversa com a API do backend. Não acessa o banco
+- **`frontend/`**: interface React + Vite + Tailwind. Apresenta o chat e os
+  dashboards Tableau; conversa com a API do backend. Não acessa o banco
   Supabase diretamente.
 - **`backend/`**: API FastAPI. Usa o Gemini para responder, recupera trechos
   relevantes da base de conhecimento (RAG) e consulta os CSVs do pipeline
@@ -14,11 +17,35 @@ doméstica e os dados do projeto, e consultar um dashboard Tableau.
 - **Supabase/Postgres + pgvector (opcional)**: guarda os trechos vetorizados
   da base para a busca do RAG. Sem `DATABASE_URL`, o backend usa um índice
   local em arquivos.
-- **Tableau (opcional)**: fornece o dashboard incorporado na aba de dados.
+- **Tableau (opcional)**: fornece os oito painéis incorporados na aba
+  **Dashboards**.
 
 O fluxo do chat é: navegador → API FastAPI → busca na base de conhecimento e,
 quando pertinente, análise de dados → Gemini → resposta ao navegador. O
 endpoint de estatísticas consulta os CSVs diretamente, sem passar pelo Gemini.
+
+## Dashboards recomendados pelas conversas
+
+A aba **Dashboards** reúne os painéis Panorama, Perfil da vítima, Perfil do
+agressor, Características da agressão, Menores, Gestantes, Qualidade dos dados
+e SINAN x SIM. A recomendação é calculada no navegador a partir das mensagens
+da pessoa usuária nas conversas salvas localmente. Ela reconhece temas por
+frases e termos explícitos; não interpreta relatos com IA nem usa respostas da
+MARIA. Conversas mais recentes têm maior peso.
+
+Um painel só é recomendado de forma personalizada quando o tema aparece em
+pelo menos três mensagens de duas conversas diferentes. Se não houver
+recorrência suficiente, o Panorama fica em destaque. Os demais painéis
+continuam disponíveis para seleção manual. A recomendação não envia o texto
+das conversas ao backend ou ao Tableau; o Tableau recebe apenas a URL do painel
+selecionado e, por padrão, nenhum filtro adicional.
+
+Isso é separado do comportamento do chat: quando a pergunta menciona um
+dashboard ou painel, o backend seleciona diretamente da base de conhecimento
+os trechos mais relacionados ao painel perguntado, sem consultar os CSVs
+estatísticos. Consulte [`frontend/README.md`](./frontend/README.md) e
+[`backend/README.md`](./backend/README.md) para detalhes de implementação e
+configuração.
 
 ## Executar para desenvolvimento
 

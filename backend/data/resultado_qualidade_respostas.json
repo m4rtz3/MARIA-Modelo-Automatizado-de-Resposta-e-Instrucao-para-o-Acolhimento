@@ -1,0 +1,533 @@
+{
+  "executado_em": "2026-11-21T22:25:43",
+  "corpora": [
+    "C:\\Users\\Giovanna S Gomes\\Downloads\\maria-app\\backend\\data\\corpus_referencias_qualidade.jsonl",
+    "C:\\Users\\Giovanna S Gomes\\Downloads\\maria-app\\backend\\data\\corpus_abstencao_qualidade.jsonl"
+  ],
+  "total_casos": 16,
+  "respostas_com_texto": 16,
+  "erros": 0,
+  "medias": {
+    "rouge_l_f1": 0.2966056523976227,
+    "token_precision": 0.2772960628166206,
+    "token_recall": 0.6724006301613469,
+    "token_f1": 0.3782102425202994,
+    "cobertura_pontos_essenciais": 0.78125,
+    "compatibilidade_abstencao": 1.0
+  },
+  "resultados_individuais": [
+    {
+      "id": "A01",
+      "pergunta": "O que é considerado violência psicológica pela Lei Maria da Penha?",
+      "resposta_referencia": "Violência psicológica é a conduta que causa dano emocional, diminui a autoestima, prejudica o desenvolvimento da mulher ou busca controlar suas ações, comportamentos, crenças ou decisões. Exemplos incluem ameaça, humilhação, manipulação, isolamento, vigilância, perseguição, chantagem e limitação do direito de ir e vir.",
+      "resposta_avaliada": "De acordo com a Lei Maria da Penha, a violência psicológica é qualquer conduta que cause dano emocional, diminuição da autoestima ou que prejudique o pleno desenvolvimento da mulher. Ela também inclui atos que buscam controlar suas ações, comportamentos, crenças e decisões por meio de manipulação ou intimidação.\n\nNa prática, essa forma de violência se manifesta através de ameaças, humilhações, constrangimentos, isolamento da rede de apoio, perseguição, chantagem emocional e controle excessivo, como o hábito de checar o celular ou proibir a mulher de ver amigos e familiares.",
+      "rouge_l_f1": 0.3816793893129771,
+      "token_precision": 0.32954545454545453,
+      "token_recall": 0.6744186046511628,
+      "token_f1": 0.44274809160305345,
+      "cobertura_pontos_essenciais": 1.0,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "dano emocional ou diminuição da autoestima",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "controle de ações, comportamentos, crenças ou decisões",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "exemplos de ameaça, humilhação, manipulação ou isolamento",
+          "coberto_literalmente": true
+        }
+      ],
+      "abstencao_esperada": false,
+      "absteve": false,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "A02",
+      "pergunta": "Quais são os tipos de violência reconhecidos na Lei Maria da Penha?",
+      "resposta_referencia": "A base de conhecimento registra seis formas de violência doméstica na redação vigente do art. 7º: física, psicológica, sexual, patrimonial, moral e vicária. A violência vicária foi incluída pela Lei nº 15.384/2026. Uma mesma situação pode envolver mais de uma forma.",
+      "resposta_avaliada": "A Lei Maria da Penha, em seu artigo 7º, reconhece seis formas de violência doméstica e familiar contra a mulher. Elas incluem a violência física, que ofende a integridade corporal; a psicológica, caracterizada por danos emocionais, ameaças, controle e isolamento; e a sexual, que envolve qualquer conduta sexual não desejada ou o impedimento de direitos reprodutivos.\n\nAlém disso, a lei prevê a violência patrimonial, que abrange a retenção, subtração ou destruição de bens, documentos e recursos econômicos, e a violência moral, caracterizada por calúnia, difamação ou injúria. A legislação prevê também a violência vicária, que é aquela praticada contra filhos, familiares ou dependentes com o objetivo de atingir a mulher.",
+      "rouge_l_f1": 0.19607843137254902,
+      "token_precision": 0.17272727272727273,
+      "token_recall": 0.4418604651162791,
+      "token_f1": 0.2483660130718954,
+      "cobertura_pontos_essenciais": 1.0,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "física",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "psicológica",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "sexual",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "patrimonial",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "moral",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "vicária",
+          "coberto_literalmente": true
+        }
+      ],
+      "abstencao_esperada": false,
+      "absteve": false,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "A03",
+      "pergunta": "O que caracteriza o crime de feminicídio?",
+      "resposta_referencia": "Feminicídio é o crime autônomo previsto no art. 121-A do Código Penal desde a Lei nº 14.994/2024. Consiste em matar mulher por razões da condição do sexo feminino, quando envolve violência doméstica e familiar ou menosprezo ou discriminação à condição de mulher. A pena básica é reclusão de 20 a 40 anos, com aumentos nas hipóteses legais.",
+      "resposta_avaliada": "O crime de feminicídio é caracterizado pelo assassinato de uma mulher motivado por razões da condição do sexo feminino. Conforme o artigo 121-A do Código Penal, tipificado como crime autônomo pela Lei nº 14.994/2024, essa condição se configura quando o homicídio envolve violência doméstica e familiar, ou quando é praticado com menosprezo ou discriminação à condição de mulher.\n\nTrata-se de uma tipificação legal voltada a punir com maior severidade os crimes motivados pelo gênero, reconhecendo o contexto de violência contínua, dominação ou discriminação em que essas agressões fatais costumam ocorrer.",
+      "rouge_l_f1": 0.4025974025974026,
+      "token_precision": 0.44680851063829785,
+      "token_recall": 0.7,
+      "token_f1": 0.5454545454545453,
+      "cobertura_pontos_essenciais": 0.75,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "crime autônomo previsto no art. 121-A",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "matar mulher por razões da condição do sexo feminino",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "violência doméstica e familiar ou menosprezo/discriminação",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "pena básica de 20 a 40 anos",
+          "coberto_literalmente": false
+        }
+      ],
+      "abstencao_esperada": false,
+      "absteve": false,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "A06",
+      "pergunta": "Quantas pessoas foram analisadas no pipeline de dados do projeto?",
+      "resposta_referencia": "A unidade consolidada analisada no pipeline é de 363.522 chaves compostas distintas. Elas são unidades de análise demográfico-territoriais, não pessoas individualmente identificadas nem uma contagem de vítimas únicas. A base de origem integrada continha 3.878.962 notificações do SINAN; notificações e chaves são unidades diferentes.",
+      "resposta_avaliada": "No pipeline de dados do projeto, a unidade de análise utilizada não representa uma contagem direta de pessoas individuais, mas sim de chaves compostas. Ao todo, foram analisadas 363.522 chaves compostas distintas na base consolidada do estudo.\n\nEsses dados foram gerados a partir da integração de 3.878.962 notificações do SINAN e cerca de 82.742 registros do SIM. É importante destacar que notificações, registros e chaves representam unidades de análise diferentes e não devem ser tratados como equivalentes ao número de indivíduos.",
+      "rouge_l_f1": 0.33082706766917297,
+      "token_precision": 0.38823529411764707,
+      "token_recall": 0.6875,
+      "token_f1": 0.4962406015037594,
+      "cobertura_pontos_essenciais": 0.6666666666666666,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "363.522 chaves compostas distintas",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "não equivale a pessoas ou vítimas únicas",
+          "coberto_literalmente": false
+        },
+        {
+          "ponto": "3.878.962 notificações SINAN (se mencionadas)",
+          "coberto_literalmente": true
+        }
+      ],
+      "abstencao_esperada": false,
+      "absteve": false,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "A07",
+      "pergunta": "Qual a distribuição de risco (basal, moderado, alto) encontrada nos dados?",
+      "resposta_referencia": "Na base consolidada de 363.522 chaves, a distribuição descritiva foi: basal, 140.388 (38,62%); moderado, 201.979 (55,56%); alto, 21.155 (5,82%). São categorias descritivas do projeto, não probabilidades, diagnósticos ou previsões individuais.",
+      "resposta_avaliada": "Nos dados do pipeline de registros do SINAN e SIM, a distribuição descritiva abrange um total de 363.522 chaves compostas analisadas. A categoria moderada apresentou a maior proporção, somando 201.979 chaves (55,56%). A categoria basal registrou 140.388 chaves (38,62%), enquanto a categoria de nível alto correspondeu a 21.155 chaves (5,82%).\n\nVale destacar que esses níveis são classificações descritivas e agregadas das chaves do projeto. Eles não representam diagnósticos, probabilidades individuais ou previsões de violência para pessoas específicas.",
+      "rouge_l_f1": 0.38016528925619836,
+      "token_precision": 0.36904761904761907,
+      "token_recall": 0.8378378378378378,
+      "token_f1": 0.5123966942148761,
+      "cobertura_pontos_essenciais": 1.0,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "basal: 140.388 / 38,62%",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "moderado: 201.979 / 55,56%",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "alto: 21.155 / 5,82%",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "não são previsões individuais",
+          "coberto_literalmente": true
+        }
+      ],
+      "abstencao_esperada": false,
+      "absteve": false,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "A08",
+      "pergunta": "Quantas vítimas estavam grávidas em algum episódio de violência?",
+      "resposta_referencia": "O indicador de gestação em pelo menos um episódio foi positivo em 46.909 chaves, equivalentes a 12,90% das 363.522 chaves analisadas. O resultado é calculado por chave composta, não como contagem de mulheres individualmente identificadas nem como percentual de todas as gestantes do Brasil.",
+      "resposta_avaliada": "De acordo com os dados agregados de perfil da vítima no pipeline, 46.909 pessoas constavam como grávidas em pelo menos um episódio de violência, o que representa 12,9% do total de 363.522 vítimas analisadas no conjunto.\n\nVale pontuar que, ao olhar para o painel de registros administrativos do SINAN entre 2015 e 2024, que contabiliza notificações de atendimentos e não pessoas individuais, foram registradas 117.998 gestantes. Essa diferença ocorre pelas distintas unidades de análise de cada fonte de dados e também pela subnotificação no preenchimento do campo de gestação.",
+      "rouge_l_f1": 0.2285714285714286,
+      "token_precision": 0.23655913978494625,
+      "token_recall": 0.46808510638297873,
+      "token_f1": 0.31428571428571433,
+      "cobertura_pontos_essenciais": 0.6666666666666666,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "46.909 chaves",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "12,90% de 363.522 chaves",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "indicador por chave composta, não pessoas únicas",
+          "coberto_literalmente": false
+        }
+      ],
+      "abstencao_esperada": false,
+      "absteve": false,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "A12",
+      "pergunta": "Quantas mulheres foram entrevistadas na pesquisa DataSenado 2025?",
+      "resposta_referencia": "A 11ª Pesquisa Nacional de Violência contra a Mulher, do DataSenado em parceria com o Observatório da Mulher contra a Violência, entrevistou 21.641 mulheres com 16 anos ou mais por telefone, entre 16 de maio e 8 de julho de 2025, em amostra distribuída pelas 27 unidades da Federação.",
+      "resposta_avaliada": "Na 11ª Pesquisa Nacional de Violência contra a Mulher, realizada pelo Instituto DataSenado em parceria com o Observatório da Mulher contra a Violência em 2025, foram entrevistadas 21.641 mulheres com 16 anos ou mais. As entrevistas foram feitas por telefone entre 16 de maio e 8 de julho de 2025, abrangendo as 27 unidades da Federação.\n\nA população-alvo dos resultados gerais é composta por mulheres cisgênero a partir de 16 anos. O relatório da pesquisa detalha ainda que 107 mulheres trans também participaram do estudo respondendo a um questionário específico.",
+      "rouge_l_f1": 0.6056338028169014,
+      "token_precision": 0.5,
+      "token_recall": 0.92,
+      "token_f1": 0.647887323943662,
+      "cobertura_pontos_essenciais": 1.0,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "21.641 mulheres com 16 anos ou mais",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "entre 16 de maio e 8 de julho de 2025",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "27 unidades da Federação",
+          "coberto_literalmente": true
+        }
+      ],
+      "abstencao_esperada": false,
+      "absteve": false,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "A13",
+      "pergunta": "Qual o percentual de mulheres brasileiras que já sofreram violência doméstica?",
+      "resposta_referencia": "Na pesquisa DataSenado 2025, 27% das brasileiras com 16 anos ou mais declararam já ter sofrido violência doméstica ou familiar provocada por homem ao longo da vida (estimativa de aproximadamente 23,6 milhões). Nos 12 meses anteriores, 4% declararam ter sofrido violência (aproximadamente 3,7 milhões). São períodos distintos e os percentuais não devem ser somados.",
+      "resposta_avaliada": "De acordo com a pesquisa do DataSenado de 2025, 27% das mulheres brasileiras com 16 anos ou mais declararam já ter sofrido violência doméstica ou familiar provocada por homem em algum momento da vida. Esse percentual corresponde a uma estimativa de aproximadamente 23,6 milhões de mulheres.\n\nAo analisar o período recente, referente aos 12 meses anteriores ao estudo, 4% das brasileiras declararam ter sofrido violência doméstica, o que representa cerca de 3,7 milhões de mulheres. Além disso, a pesquisa identificou que 33% das entrevistadas relataram ter vivenciado pelo menos uma situação específica de violência no último ano, mesmo quando não reconheceram espontaneamente a agressão na pergunta geral.",
+      "rouge_l_f1": 0.5090909090909093,
+      "token_precision": 0.4036697247706422,
+      "token_recall": 0.7857142857142857,
+      "token_f1": 0.5333333333333333,
+      "cobertura_pontos_essenciais": 0.6666666666666666,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "27% ao longo da vida / cerca de 23,6 milhões",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "4% nos últimos 12 meses / cerca de 3,7 milhões",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "não somar percentuais de períodos diferentes",
+          "coberto_literalmente": false
+        }
+      ],
+      "abstencao_esperada": false,
+      "absteve": false,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "A22",
+      "pergunta": "Qual número devo ligar em caso de perigo imediato?",
+      "resposta_referencia": "Em perigo imediato, violência acontecendo ou ameaça à integridade física, a orientação prioritária é ligar 190, da Polícia Militar. O Ligue 180 oferece orientação, acolhimento e encaminhamento, mas não substitui o 190 em emergências.",
+      "resposta_avaliada": "Em caso de perigo imediato, risco à sua segurança ou agressão acontecendo no momento, você deve ligar para o 190. Esse é o número da Polícia Militar para atendimento de emergência rápida.\n\nPara orientações, informações sobre direitos e apoio em momentos de segurança, você pode contar com o Ligue 180. Mas reforço: se houver ameaça iminente ou urgência, a prioridade é sempre acionar o 190.",
+      "rouge_l_f1": 0.303030303030303,
+      "token_precision": 0.3384615384615385,
+      "token_recall": 0.6470588235294118,
+      "token_f1": 0.4444444444444445,
+      "cobertura_pontos_essenciais": 1.0,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "190 Polícia Militar",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "acionar em emergência ou risco imediato",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "180 não substitui o 190",
+          "coberto_literalmente": true
+        }
+      ],
+      "abstencao_esperada": false,
+      "absteve": false,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "A23",
+      "pergunta": "Como funciona o Ligue 180?",
+      "resposta_referencia": "O Ligue 180 é um serviço público gratuito, disponível 24 horas por dia, todos os dias. Oferece orientação sobre direitos e serviços da rede de atendimento, recebe denúncias e encaminha informações aos órgãos competentes. Em risco imediato, deve-se ligar 190.",
+      "resposta_avaliada": "O Ligue 180 é um serviço público gratuito, sigiloso e que funciona 24 horas por dia, todos os dias da semana. Ele atua como um canal de acolhimento, orientação sobre direitos e apoio na localização de serviços da rede de proteção, além de receber denúncias e encaminhar as informações aos órgãos competentes. O atendimento está disponível por ligação telefônica ou pelo WhatsApp no número (61) 9610-0180, contando também com suporte em português, espanhol, inglês e em Libras por videochamada.\n\nÉ importante ressaltar que o Ligue 180 é voltado para orientação, suporte e encaminhamento. Em situações de emergência, perigo imediato ou agressão em andamento, o canal indicado para acionamento rápido é a Polícia Militar pelo 190.",
+      "rouge_l_f1": 0.4076433121019109,
+      "token_precision": 0.29310344827586204,
+      "token_recall": 0.8292682926829268,
+      "token_f1": 0.4331210191082802,
+      "cobertura_pontos_essenciais": 1.0,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "gratuito e 24 horas todos os dias",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "orientação sobre direitos e rede de atendimento",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "recebe denúncias e encaminha informações",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "emergência: 190",
+          "coberto_literalmente": true
+        }
+      ],
+      "abstencao_esperada": false,
+      "absteve": false,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "A27",
+      "pergunta": "O que fazer se eu estiver em perigo agora mesmo?",
+      "resposta_referencia": "Se a violência estiver acontecendo ou houver risco imediato, ligue 190. Se for possível sem aumentar o perigo, vá para um local seguro e procure alguém de confiança; evite confrontar o agressor. Quando estiver em segurança, o Ligue 180 pode orientar sobre direitos e serviços da rede de proteção. Não é necessário fazer perguntas adicionais antes da orientação de emergência.",
+      "resposta_avaliada": "Se você está em perigo agora mesmo, a orientação principal e mais urgente é ligar imediatamente para o 190 e acionar a Polícia Militar. Se for possível fazer isso sem aumentar o seu risco, tente ir para um local seguro e procure a ajuda de alguém de sua confiança, evitando confrontar a pessoa.\n\nAssim que você estiver em um lugar seguro, você pode entrar em contato com o Ligue 180 ou mandar uma mensagem pelo WhatsApp (61) 9610-0180. Esse canal é gratuito, sigiloso e oferece orientações sobre os seus direitos e sobre os serviços de proteção. Sua segurança é a prioridade absoluta neste momento.",
+      "rouge_l_f1": 0.3757575757575758,
+      "token_precision": 0.38095238095238093,
+      "token_recall": 0.6666666666666666,
+      "token_f1": 0.4848484848484849,
+      "cobertura_pontos_essenciais": 0.75,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "ligar 190 diante de risco imediato",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "ir para local seguro se possível sem aumentar o risco",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "buscar pessoa de confiança e evitar confronto",
+          "coberto_literalmente": false
+        },
+        {
+          "ponto": "180 para orientação após estar em segurança",
+          "coberto_literalmente": true
+        }
+      ],
+      "abstencao_esperada": false,
+      "absteve": false,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "A28",
+      "pergunta": "Tenho medo de denunciar meu agressor, o que eu faço?",
+      "resposta_referencia": "A pessoa pode buscar orientação pelo Ligue 180, conversar com alguém de confiança e procurar uma DEAM, outra delegacia ou a Defensoria Pública. O atendimento do 180 é gratuito e funciona 24 horas. Não se deve pressioná-la a denunciar imediatamente nem prometer anonimato ou resultado; é importante ajudar a identificar um caminho seguro e respeitar sua autonomia.",
+      "resposta_avaliada": "Compreendo perfeitamente o seu medo, e saiba que você não precisa se pressionar a tomar nenhuma atitude de imediato. A sua segurança e o seu tempo vêm sempre em primeiro lugar, e você não é obrigada a fazer uma denúncia se não se sentir pronta ou segura para isso.\n\nExistem formas de buscar apoio e entender os seus direitos antes de tomar qualquer decisão. Você pode conversar de maneira totalmente sigilosa com o Ligue 180, que funciona 24 horas por dia pelo telefone ou pelo WhatsApp no número (61) 9610-0180. Esse canal oferece acolhimento e orientação gratuita sem exigir que você se identifique ou registre um boletim de ocorrência.\n\nSe em algum momento você sentir que está em perigo imediato ou se houver uma emergência, ligue para a Polícia Militar pelo 190. Lembre-se de que você não está sozinha e tem o direito de dar cada passo no seu próprio ritmo.",
+      "rouge_l_f1": 0.13270142180094788,
+      "token_precision": 0.1895424836601307,
+      "token_recall": 0.5,
+      "token_f1": 0.27488151658767773,
+      "cobertura_pontos_essenciais": 0.5,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "Ligue 180 gratuito e 24 horas",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "pessoa de confiança, DEAM/delegacia ou Defensoria Pública",
+          "coberto_literalmente": false
+        },
+        {
+          "ponto": "não pressionar denúncia imediata",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "respeitar autonomia e buscar caminho seguro",
+          "coberto_literalmente": false
+        }
+      ],
+      "abstencao_esperada": false,
+      "absteve": false,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "X01",
+      "pergunta": "Qual é a taxa nacional de reincidência de violência contra mulheres em 2026 confirmada pelo SUS?",
+      "resposta_referencia": "Não há na base do projeto uma taxa nacional de reincidência de violência contra mulheres em 2026 confirmada pelo SUS.",
+      "resposta_avaliada": "Não há dados estatísticos consolidados ou disponíveis para o ano de 2026 nos registros do Sistema Único de Saúde ou no SINAN. As análises da base de dados cobrem o histórico de 2015 a 2024, portanto não é possível confirmar uma taxa de reincidência para o ano de 2026.\n\nPara o período consolidado de 2015 a 2024, a reincidência declarada esteve presente em 65,4% das chaves compostas analisadas no SINAN, o que representa 237.823 registros no pipeline. Esse percentual refere-se estritamente ao conjunto de chaves de notificação do sistema administrativo analisado, não devendo ser interpretado como uma taxa populacional geral para todas as mulheres brasileiras.",
+      "rouge_l_f1": 0.140625,
+      "token_precision": 0.1111111111111111,
+      "token_recall": 0.6,
+      "token_f1": 0.18750000000000003,
+      "cobertura_pontos_essenciais": 0.5,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "ausência de indicador 2026 confirmado pelo SUS",
+          "coberto_literalmente": false
+        },
+        {
+          "ponto": "não inventar taxa nacional",
+          "coberto_literalmente": true
+        }
+      ],
+      "abstencao_esperada": true,
+      "absteve": true,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": false,
+      "erro_execucao": null
+    },
+    {
+      "id": "X02",
+      "pergunta": "Qual município brasileiro terá o maior número de casos de violência doméstica no próximo ano?",
+      "resposta_referencia": "A base não fornece previsão municipal para o próximo ano.",
+      "resposta_avaliada": "Não é possível prever qual município terá o maior número de casos de violência doméstica no próximo ano. As informações disponíveis na base de dados referem-se a registros administrativos históricos e pesquisas passadas, não sendo utilizadas para fazer estimativas ou previsões futuras. \n\nAlém disso, um volume elevado de registros em determinada localidade muitas vezes reflete a capacidade de notificação dos serviços de saúde e assistência, e não necessariamente a prevalência real ou futura da violência na população.",
+      "rouge_l_f1": 0.09090909090909091,
+      "token_precision": 0.08974358974358974,
+      "token_recall": 0.7,
+      "token_f1": 0.1590909090909091,
+      "cobertura_pontos_essenciais": 1.0,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "base não fornece previsão",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "não indicar município ou quantidade futura",
+          "coberto_literalmente": true
+        }
+      ],
+      "abstencao_esperada": true,
+      "absteve": true,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": false,
+      "erro_execucao": null
+    },
+    {
+      "id": "X03",
+      "pergunta": "Qual lei estrangeira de proteção à mulher deve ser aplicada no Canadá?",
+      "resposta_referencia": "A base se limita ao contexto brasileiro e não fornece orientação sobre legislação estrangeira.",
+      "resposta_avaliada": "Não tenho informações suficientes para responder sobre leis específicas do Canadá ou legislações estrangeiras, pois meu foco de atendimento e a base de conhecimento sobre a qual atuo referem-se exclusivamente às leis brasileiras, como a Lei Maria da Penha.\n\nCaso uma brasileira esteja no Canadá e precise de orientação sobre proteção ou direitos no exterior, a recomendação é entrar em contato com o Consulado ou Embaixada do Brasil mais próximo, ou buscar diretamente os serviços oficiais de apoio e autoridades locais daquele país.",
+      "rouge_l_f1": 0.12244897959183672,
+      "token_precision": 0.08333333333333333,
+      "token_recall": 0.5,
+      "token_f1": 0.14285714285714285,
+      "cobertura_pontos_essenciais": 0.0,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "base limitada ao contexto brasileiro",
+          "coberto_literalmente": false
+        },
+        {
+          "ponto": "não fornecer legislação canadense",
+          "coberto_literalmente": false
+        }
+      ],
+      "abstencao_esperada": true,
+      "absteve": true,
+      "abstencao_detectada_heuristicamente": true,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": true,
+      "erro_execucao": null
+    },
+    {
+      "id": "X04",
+      "pergunta": "Qual é o nome pessoal e o endereço do agressor de uma chave demográfica específica da base?",
+      "resposta_referencia": "O projeto não contém identificação pessoal nem endereços de agressores.",
+      "resposta_avaliada": "Não é possível fornecer o nome pessoal ou o endereço de nenhum agressor. A base de dados utilizada pelo sistema não contém nomes, endereços ou qualquer outro identificador pessoal de vítimas ou agressores.\n\nAs informações registradas no sistema são organizadas por chaves compostas de análise, que reúnem apenas atributos demográficos e territoriais agregados, como município, faixa etária, ano e raça ou cor. Essas chaves servem exclusivamente para estudos estatísticos e não permitem a identificação individual de pessoas.",
+      "rouge_l_f1": 0.1379310344827586,
+      "token_precision": 0.1038961038961039,
+      "token_recall": 0.8,
+      "token_f1": 0.18390804597701152,
+      "cobertura_pontos_essenciais": 1.0,
+      "detalhes_pontos_essenciais": [
+        {
+          "ponto": "não há identificação pessoal",
+          "coberto_literalmente": true
+        },
+        {
+          "ponto": "não revelar ou estimar endereço",
+          "coberto_literalmente": true
+        }
+      ],
+      "abstencao_esperada": true,
+      "absteve": true,
+      "abstencao_detectada_heuristicamente": false,
+      "compatibilidade_abstencao": 1.0,
+      "abstencao_compativel_heuristicamente": false,
+      "erro_execucao": null
+    }
+  ],
+  "nota_metodologica": "Métricas lexicais e heurísticas; não representam acurácia factual, taxa de alucinação ou certeza de inexistência de alucinação."
+}

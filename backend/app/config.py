@@ -39,13 +39,23 @@ MODELO_EMB_FILE_NAME = os.getenv(
 )
 
 # ---- Paths de dados (mesma lógica de fallback do notebook original) ----
-KB_PATH = Path(
-    os.getenv("KB_PATH", str(BASE_DIR / "data" / "knowledge_base.md"))
+def _caminho_relativo_backend(valor: str, padrao: Path) -> Path:
+    caminho = Path(valor or str(padrao))
+    return caminho if caminho.is_absolute() else (BASE_DIR / caminho).resolve()
+
+
+KB_PATH = _caminho_relativo_backend(
+    os.getenv("KB_PATH", ""),
+    BASE_DIR / "data" / "knowledge_base.md",
 )
-DADOS_BI_PATH = Path(
-    os.getenv("DADOS_BI_PATH", str(BASE_DIR / "data" / "dados_bi"))
+DADOS_BI_PATH = _caminho_relativo_backend(
+    os.getenv("DADOS_BI_PATH", ""),
+    BASE_DIR / "data" / "dados_bi",
 )
-INDEX_DIR = Path(os.getenv("INDEX_DIR", str(BASE_DIR / "data" / "indice")))
+INDEX_DIR = _caminho_relativo_backend(
+    os.getenv("INDEX_DIR", ""),
+    BASE_DIR / "data" / "indice",
+)
 INDEX_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---- Índice de retrieval (pgvector) ----

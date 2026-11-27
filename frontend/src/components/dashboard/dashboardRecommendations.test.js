@@ -11,6 +11,15 @@ function conversa(id, mensagens, atualizadaEm) {
   }
 }
 
+test('configura todos os dashboards com URLs de visualização incorporáveis', () => {
+  for (const dashboard of DASHBOARDS) {
+    const url = new URL(dashboard.url)
+
+    assert.match(url.pathname, /^\/views\//)
+    assert.equal(url.searchParams.get(':embed'), 'true')
+  }
+})
+
 test('mantém Panorama quando o tema aparece em apenas uma conversa', () => {
   const resultado = recomendarDashboards([
     conversa('a', [

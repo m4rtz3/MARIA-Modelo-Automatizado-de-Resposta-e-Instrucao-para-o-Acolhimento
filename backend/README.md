@@ -115,14 +115,14 @@ Para indexar a partir do **CMD no Windows local**, com o arquivo `.env` e o
 ambiente Python configurados:
 
 ```cmd
-cd /d "C:\Users\Giovanna S Gomes\Downloads\maria-app\backend"
+cd /d "backend"
 .venv-py313\Scripts\python.exe scripts\indexador.py
 ```
 
 No **PowerShell**, use os comandos próprios desse terminal:
 
 ```powershell
-Set-Location "C:\Users\Giovanna S Gomes\Downloads\maria-app\backend"
+Set-Location backend
 .\.venv-py313\Scripts\python.exe scripts\indexador.py
 ```
 
