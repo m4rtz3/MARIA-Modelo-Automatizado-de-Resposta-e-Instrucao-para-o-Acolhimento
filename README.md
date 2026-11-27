@@ -14,10 +14,10 @@ outro painel.
 - **`backend/`**: API FastAPI. Usa o Gemini para responder, recupera trechos
   relevantes da base de conhecimento (RAG) e consulta os CSVs do pipeline
   quando necessário.
-- **Supabase/Postgres + pgvector (opcional)**: guarda os trechos vetorizados
+- **Supabase/Postgres + pgvector: guarda os trechos vetorizados
   da base para a busca do RAG. Sem `DATABASE_URL`, o backend usa um índice
   local em arquivos.
-- **Tableau (opcional)**: fornece os oito painéis incorporados na aba
+- **Tableau**: fornece os dez painéis incorporados na aba
   **Dashboards**.
 
 O fluxo do chat é: navegador → API FastAPI → busca na base de conhecimento e,
@@ -27,8 +27,7 @@ endpoint de estatísticas consulta os CSVs diretamente, sem passar pelo Gemini.
 ## Dashboards recomendados pelas conversas
 
 A aba **Dashboards** reúne os painéis Panorama, Perfil da vítima, Perfil do
-agressor, Características da agressão, Menores, Gestantes, Qualidade dos dados
-e SINAN x SIM. A recomendação é calculada no navegador a partir das mensagens
+agressor, Características da agressão, Menores, Gestantes, Qualidade dos dados, SINAN x SIM, Histórico e Contexto DataSenado. A recomendação é calculada no navegador a partir das mensagens
 da pessoa usuária nas conversas salvas localmente. Ela reconhece temas por
 frases e termos explícitos; não interpreta relatos com IA nem usa respostas da
 MARIA. Conversas mais recentes têm maior peso.
