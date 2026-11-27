@@ -14,7 +14,7 @@ outro painel.
 - **`backend/`**: API FastAPI. Usa o Gemini para responder, recupera trechos
   relevantes da base de conhecimento (RAG) e consulta os CSVs do pipeline
   quando necessário.
-- **Supabase/Postgres + pgvector: guarda os trechos vetorizados
+- **Supabase/Postgres + pgvector**: guarda os trechos vetorizados
   da base para a busca do RAG. Sem `DATABASE_URL`, o backend usa um índice
   local em arquivos.
 - **Tableau**: fornece os dez painéis incorporados na aba
